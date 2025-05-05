@@ -1,0 +1,19 @@
+---
+BasedOnStyle: LLVM
+ColumnLimit: 100
+AccessModifierOffset: -4
+DerivePointerAlignment: false
+IndentWidth: 2
+AlignConsecutiveAssignments: 'AcrossComments'
+AlignConsecutiveDeclarations: 'AcrossComments'
+ReferenceAlignment: Left
+PointerAlignment: Left
+AllowShortLoopsOnASingleLine: 'true'
+AllowShortBlocksOnASingleLine: 'true'
+AllowShortCaseLabelsOnASingleLine: 'true'
+ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
+ConstructorInitializerIndentWidth: '8'
+ContinuationIndentWidth: '8'
+BreakConstructorInitializers: 'BeforeComma'
+SpaceBeforeCpp11BracedList: 'true'
+AllowAllConstructorInitializersOnNextLine: 'true'

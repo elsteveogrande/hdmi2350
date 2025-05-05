@@ -1,0 +1,14 @@
+build/
+.vscode/
+random/
+.cache/
+.mypy_cache/
+*.o
+*.s
+*.elf
+*.bin
+*.bin.uf2
+*.dwo
+*.dwp
+!boot2.s
+priv/

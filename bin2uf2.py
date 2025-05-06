@@ -49,10 +49,9 @@ def bin2uf2(bin_path: Path, uf2_path: Path) -> None:
             for i in ints:
                 write(pack("<I", i))
 
-        # Output of "binsum" should have produced at least 256 bytes
-        # (it will have added padding + a checksum)
         data = bin.read()
-        assert len(data) >= 256
+        assert len(data)
+        assert data[:4] == b'\xd3\xde\xff\xff'  # PICOBIN_BLOCK_MARKER_START
 
         # Pad to multiple of 256
         while len(data) % 256:

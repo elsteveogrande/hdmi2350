@@ -1,36 +1,26 @@
-all: _build_dir hdmi.bin.uf2
+BOOT_OBJS := \
+	build/init/image_def.o \
+	build/init/reset.o \
 
-hdmi.bin.uf2: hdmi.bin binsum.py bin2uf2.py
-	./binsum.py hdmi.bin
-	./bin2uf2.py hdmi.bin
+all: _build_dirs build/hdmi.bin.uf2
 
-hdmi.bin: hdmi.elf
-	llvm-objcopy -O binary hdmi.elf hdmi.bin
+_build_dirs:
+	mkdir -p build build/init || true
 
-_build_dir:
-	mkdir -p build
+build/hdmi.bin.uf2: build/hdmi.bin bin2uf2.py
+	./bin2uf2.py $<
+
+build/hdmi.bin: build/hdmi.elf
+	llvm-objcopy -D -O binary $< $@
+
+build/hdmi.elf: $(BOOT_OBJS) misc/layout.ld
+	clang++ @link_flags.txt -o $@ $(BOOT_OBJS)
+
+build/%.o: build/%.s
+	clang++ @compile_flags.txt -xassembler -c -o $@ $<
+
+build/%.s: src/%.cc src/**/*.h
+	clang++ @compile_flags.txt -xc++ -S -o $@ $<
 
 clean:
-	rm -f build/
-
-# hdmi.elf: boot2.o Boot.o hdmi.o layout.ld
-# 	clang++ @link_flags.txt \
-# 		-o hdmi.elf \
-# 		boot2.o \
-# 		boot.o \
-# 		hdmi.o
-
-# Boot.o: Boot.s
-# 	clang++ @compile_flags.txt -xassembler -c -o $@ $<
-
-# hdmi.o: hdmi.s
-# 	clang++ @compile_flags.txt -xassembler -c -o hdmi.o hdmi.s
-
-# hdmi.s: hdmi.cc **/*.h
-# 	clang++ @compile_flags.txt -xc++ -c -S -o hdmi.s hdmi.cc
-
-# boot2.o: boot/boot2.s
-# 	clang++ @compile_flags.txt -xassembler -c -o boot2.o $<
-
-# Boot.s: boot/Boot.cc hdmi.cc **/*.h
-# 	clang++ @compile_flags.txt -xc++ -c -S -o $@ -Oz $<
+	rm -rf build/

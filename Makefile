@@ -1,6 +1,6 @@
-BOOT_OBJS := \
-	build/init/image_def.o \
-	build/init/reset.o \
+BOOT_LLS := \
+	build/init/image_def.ll \
+	build/init/reset.ll \
 
 all: _build_dirs build/hdmi.bin.uf2
 
@@ -13,14 +13,25 @@ build/hdmi.bin.uf2: build/hdmi.bin bin2uf2.py
 build/hdmi.bin: build/hdmi.elf
 	llvm-objcopy -D -O binary $< $@
 
-build/hdmi.elf: $(BOOT_OBJS) misc/layout.ld
-	clang++ @link_flags.txt -o $@ $(BOOT_OBJS)
+build/hdmi.elf: build/hdmi.s misc/layout.ld
+	clang++ @link_flags.txt @compile_flags.txt -xassembler -o $@ build/hdmi.s
 
-build/%.o: build/%.s
-	clang++ @compile_flags.txt -xassembler -c -o $@ $<
+build/hdmi.s: build/hdmi.opt.ll
+	llc -o $@ $<
 
-build/%.s: src/%.cc src/**/*.h
-	clang++ @compile_flags.txt -xc++ -S -o $@ $<
+build/hdmi.opt.ll: build/hdmi.ll
+	opt -S -Os -o $@ $<
+
+build/hdmi.ll: $(BOOT_LLS)
+	llvm-link -S -v -o $@ $(BOOT_LLS)
+
+.PRECIOUS: build/%.ll
+
+# build/%.o: build/%.s
+# 	clang++ @compile_flags.txt -xassembler -c -o $@ $<
+
+build/%.ll: src/%.cc src/**/*.h
+	clang++ @compile_flags.txt -xc++ -S -emit-llvm -o $@ $<
 
 clean:
 	rm -rf build/

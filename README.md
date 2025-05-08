@@ -4,6 +4,9 @@
 
 A working, but dirty and incomplete, implementation of HDMI, targeting RP2350.
 
+These initial versions support HDMI video (no audio yet), and render
+a 320x240 framebuffer at 60 Hz.  More details on that below.
+
 # Getting started
 
 ## Dependencies
@@ -17,14 +20,14 @@ Run `make` and copy the resulting `build/hdmi.bin.uf2` onto your Pico2.
 Note that this avoids the official `pico-sdk` project, for better or worse.
 Reasons include (and I know some of these are weak)
 
-* I don't want to use `cmake`.
-  CMake is great, I guess, but my brain just can't even.
 * I prefer Clang, `clangd`, LLD, and generally the LLVM line of tools,
   over gcc.
 * SDKs are great at making certain things easier for its users
   but I simply wanted to try making this thing -- literally from the
   register programming and UF2 file generation, to the part where your
   TV shows stuff -- by my own dumb, stubborn self.
+* CMake, cross-project dependencies, and other things related to the
+  build system is not the thing I want to deal with right now.
 
 This is more for fun than for any serious use, so I opted to dive into
 a challenging project with both feet, and force myself to learn new stuff
@@ -35,6 +38,14 @@ a modern C++ (again, forcing myself to internalize fancy C++23 features).
 
 In general, I want an application and mini-SDK that is small, well-commented,
 and easy to understand, hopefully so others can enjoy digging into the RP2350.
+
+My thoughts about the Pico SDK: if you're building Pico code for any serious
+reason then that SDK is probablt the way to go.  It makes certain things easy and
+mostly shields you from the grittiest details like addresses, registers' bits,
+compiler flags, memory layout; and it's actually supported by Raspberry Pi
+and a community of many professionals and hobbyists.  On the other hand, I like
+those weird things like memory layout, registers, and so on; I enjoy getting
+into _those particular_ weeds so I went this direction instead.
 
 # Limitations
 

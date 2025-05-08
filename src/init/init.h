@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../types.h"
+#include "../Types.h"
 
 extern "C" {
 extern void const* __stack_lo;
@@ -12,9 +12,10 @@ Reset handler and basic initialization for the RP2350.
 */
 
 namespace sys {
-
-constexpr u32 const kInitialStackSize {256};
-
+constexpr u32 const                             kInitialStackSize {256};
 [[gnu::used]] [[gnu::retain]] [[noreturn]] void reset();
-
 } // namespace sys
+
+namespace hdmi {
+[[gnu::used]] [[gnu::retain]] [[noreturn]] void run();
+}

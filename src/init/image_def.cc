@@ -20,6 +20,11 @@ In this implementation:
   even for the `LAST_ITEM` (which contains the total size of prior items).
 */
 
+[[gnu::section(".init_vec_table")]] [[gnu::used]] [[gnu::retain]] constexpr struct {
+  u32 const sp {0x20000400};
+  void (*pc)() {&sys::reset};
+} initialVecTable;
+
 [[gnu::section(".image_def")]] [[gnu::used]] [[gnu::retain]] constexpr struct [[gnu::packed]] {
   struct [[gnu::packed]] StartMarker {
     u32 const val = 0xffffded3;
@@ -36,15 +41,15 @@ In this implementation:
     u16 const flags {};
   };
 
-  /** 5.9.3.4, "ENTRY_POINT item" */
-  struct [[gnu::packed]] EntryPoint {
-    u8 const  type {0x44};
-    u8 const  size {0x04}; // 4 words
-    u16 const _pad {};
-    u32 const sp {0x20000100};
-    void (*pc)() {};
-    u32 const spLimit {0x20000000};
-  };
+  // /** 5.9.3.4, "ENTRY_POINT item" */
+  // struct [[gnu::packed]] EntryPoint {
+  //   u8 const  type {0x44};
+  //   u8 const  size {0x04}; // 4 words
+  //   u16 const _pad {};
+  //   u32 const sp {0x20000100};
+  //   void (*pc)() {};
+  //   u32 const spLimit {0x20000000};
+  // };
 
   struct [[gnu::packed]] LastItem {
     u8  type {0xff};  // BLOCK_ITEM_LAST has a 2-byte size
@@ -54,10 +59,10 @@ In this implementation:
 
   // Start laying out the IMAGE_DEF bytes
 
-  StartMarker start {};                  // Start magic
-  ImageDef    image {.flags = 0x1001};   // Item 0: CHIP=2350, CPU=ARM, EXE=1
-  EntryPoint  entry {.pc = sys::reset};  // Initial SP and PC locations
-  LastItem    lastItem {.totalSize = 5}; // Total of preceding items' sizes
+  StartMarker start {};                // Start magic
+  ImageDef    image {.flags = 0x1021}; // Item 0: CHIP=2350, CPU=ARM, EXE=1, S=2
+  // EntryPoint  entry {.pc = sys::reset};  // Initial SP and PC locations
+  LastItem    lastItem {.totalSize = 1}; // Total of preceding items' sizes
   u32         link {0};                  // Single-block loop, so there's no link
   EndMarker   end {};                    // End magic
 } imageDefARM;

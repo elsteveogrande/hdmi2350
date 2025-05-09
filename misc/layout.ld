@@ -11,11 +11,12 @@ MEMORY {
 ENTRY(0x10000000)
 
 SECTIONS {
-  .image_def  (0x10000000)          : {} > FLASH
+  .init_vec_table (0x10000000)      : {} > FLASH
+  .image_def      (0x10000008)      : {} > FLASH
   .text                             : {} > FLASH
   .data                             : {} > FLASH
   .rodata                           : {} > FLASH
 
   .stack      (0x20000000) (NOLOAD) : {} >  SRAM
-  .bss        (0x20000100) (NOLOAD) : {} >  SRAM
+  .bss        (0x20000400) (NOLOAD) : {} >  SRAM
 }

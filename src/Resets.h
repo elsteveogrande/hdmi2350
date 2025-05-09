@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Reg.h"
-#include "Util.h"
 
 /*
 Section 7.5, Subsystem Resets
@@ -42,12 +41,6 @@ struct Resets {
     kUSBCTRL   = 28,
   };
 
-  constexpr static R32Block resetControl {0x40020000};
-  constexpr static R32Block resetStatus {0x40020008};
-
-  void resetAndWait(Periph p) {
-    auto bit = u8(p);
-    resetControl.bit(bit, true);
-    while (!resetStatus.bit(bit)) { _BUSY_LOOP(); }
-  }
+  constexpr static R32Block reset {0x40020000};
+  constexpr static R32Block resetDone {0x40020008};
 };

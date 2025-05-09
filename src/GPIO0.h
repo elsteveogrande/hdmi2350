@@ -9,7 +9,7 @@ https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
 
 struct GPIO0 {
 
-  constexpr static u32 kGPIO0Base = 0x40028000;
+  constexpr static u32 kBank0Base = 0x40028000;
 
   struct Status : R32 {
     /** IRQTOPROC: interrupt to processors, after override is applied */
@@ -45,6 +45,7 @@ struct GPIO0 {
     auto oeOver(this auto const& self, Override over) { return self.set(15, 14, u32(over)); }
     auto outOver(this auto const& self, Override over) { return self.set(14, 12, u32(over)); }
 
+    /** 9.4. Function Select */
     enum class FuncSel : u8 {
       // Note that the correct funcsel depends on the GPIO number.
       HSTX      = 0,
@@ -69,8 +70,8 @@ struct GPIO0 {
     u32            funcSel(this auto& self) { return self.get(5, 0); }
   };
 
-  static Status  status(u8 index) { return {kGPIO0Base + (index * 8)}; }
-  static Control control(u8 index) { return {kGPIO0Base + (index * 8) + 4}; }
+  static Status  status(u8 index) { return {kBank0Base + (index * 8)}; }
+  static Control control(u8 index) { return {kBank0Base + (index * 8) + 4}; }
 
   // TODO: many more registers
 };

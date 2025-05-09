@@ -28,14 +28,21 @@ struct uf2_block {
 };
 
 Defined at: https://github.com/microsoft/uf2
+
+See "5.5.2. UF2 Format Details" in the datasheet (page 400 or around there):
+https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
 """
 
-MAGIC_START0        = 0x0A324655
-MAGIC_START1        = 0x9E5D5157
-MAGIC_END           = 0x0AB16F30
-RP2040_FAMILY_ID    = 0xe48bff56
-FLAG_FAMILY_ID      = 0x00002000
-TARGET              = 0x10000000
+MAGIC_START0          = 0x0a324655
+MAGIC_START1          = 0x9e5d5157
+MAGIC_END             = 0x0ab16f30
+# absolute: "Special family ID for content intended to be written directly to flash, ignoring partitions"
+DIRECT_FLASH_ID       = 0xe48bff57
+# rp2350_arm_s: "RP2350 Arm Secure image (i.e. one intended to be booted by the bootrom)"
+# (This will also require the S flag = 0x02 in the image definition.)
+RP2350_ARMSECURE_ID   = 0xe48bff59
+FLAG_FAMILY_ID        = 0x00002000
+TARGET                = 0x10000000
 
 
 def bin2uf2(bin_path: Path, uf2_path: Path) -> None:
@@ -51,7 +58,6 @@ def bin2uf2(bin_path: Path, uf2_path: Path) -> None:
 
         data = bin.read()
         assert len(data)
-        assert data[:4] == b'\xd3\xde\xff\xff'  # PICOBIN_BLOCK_MARKER_START
 
         # Pad to multiple of 256
         while len(data) % 256:
@@ -59,6 +65,40 @@ def bin2uf2(bin_path: Path, uf2_path: Path) -> None:
 
         blocks = len(data) // 256
         target = TARGET
+
+        # Before writing the actual flash content, we need to write this dummy
+        # block, as a workaround for some erratum (see E10 in the datasheet).
+        # See thread at: https://forums.raspberrypi.com/viewtopic.php?t=375030
+        """
+# First UF2 block from:
+# hexdump -C ~/Downloads/RPI_PICO2-20250415-v1.25.0.uf2
+~/code/hdmi2350$ hexdump -C ~/Downloads/RPI_PICO2-20250415-v1.25.0.uf2 | cat -n | head -n 11
+     1	00000000  55 46 32 0a 57 51 5d 9e  00 a0 00 00 00 ff ff 10  |UF2.WQ].........|
+     2	00000010  00 01 00 00 00 00 00 00  02 00 00 00 57 ff 8b e4  |............W...|
+     3	00000020  ef ef ef ef ef ef ef ef  ef ef ef ef ef ef ef ef  |................|
+     4	*
+     5	00000120  04 e3 57 99 00 00 00 00  00 00 00 00 00 00 00 00  |..W.............|
+     6	00000130  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+     7	*
+     8	000001f0  00 00 00 00 00 00 00 00  00 00 00 00 30 6f b1 0a  |............0o..|
+     9	00000200  55 46 32 0a 57 51 5d 9e  00 20 00 00 00 00 00 10  |UF2.WQ].. ......|
+    10	00000210  00 01 00 00 00 00 00 00  f2 04 00 00 59 ff 8b e4  |............Y...|
+    11	00000220  00 20 08 20 5d 01 00 10  13 01 00 10 15 01 00 10  |. . ]...........|
+"""
+        write32(MAGIC_START0)
+        write32(MAGIC_START1)
+        write32(0x0000a000)   # Flags: ?
+        write32(0x10ffff00)   # End of flash CS0; just a place to write 256 junk bytes
+        write32(0x00000100)   # Size = 256
+        write32(0x00000000)   # Block = 0
+        write32(0x00000002)   # Blocks = 2 (?)
+        write32(DIRECT_FLASH_ID)
+        write(b'\xef' * 256)
+        write32(0x9957e304)   # Unknown.  Random junk in the UF2 packet's padding, I guess?
+        write(b'\x00' * (0x1fc - 0x124))
+        write32(MAGIC_END)
+
+        # And now our actual binary image:
 
         for block in range(blocks):
           write32(
@@ -69,7 +109,7 @@ def bin2uf2(bin_path: Path, uf2_path: Path) -> None:
               256,
               block,
               blocks,
-              RP2040_FAMILY_ID)
+              RP2350_ARMSECURE_ID)
           write(data[:256])
           write(b'\x00' * (476 - 256))
           write32(MAGIC_END)

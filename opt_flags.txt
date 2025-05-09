@@ -1,0 +1,5 @@
+-Os
+--frame-pointer=all
+--function-sections
+--thinlto-bc
+--inline-threshold=4

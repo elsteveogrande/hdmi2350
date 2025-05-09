@@ -11,7 +11,7 @@ a 320x240 framebuffer at 60 Hz.  More details on that below.
 
 ## Dependencies
 
-* LLVM: Clang, LLD.  Needs a new enough version which supports C++23.
+* LLVM: Clang, LLD.  Needs a new enough version which supports C++26.
 * Python
 * `make`
 
@@ -34,7 +34,7 @@ a challenging project with both feet, and force myself to learn new stuff
 (and `cmake` is not _currently_ one of those things).
 
 I also felt like this was a good opportunity to redo some things with
-a modern C++ (again, forcing myself to internalize fancy C++23 features).
+a modern C++ (again, forcing myself to internalize fancy C++26 features).
 
 In general, I want an application and mini-SDK that is small, well-commented,
 and easy to understand, hopefully so others can enjoy digging into the RP2350.

@@ -11,9 +11,6 @@ inline void _busy_loop(char const* file = nullptr, unsigned line = 0) {
   (void)line;
 }
 
-#ifndef _BUSY_LOOP
-#define _BUSY_LOOP()                                                                               \
-  {                                                                                                \
-    do { _busy_loop(__FILE__, __LINE__); } while (0);                                              \
-  }
-#endif
+// clang-format off
+#define _BUSY_LOOP() { do { _busy_loop(__FILE__, __LINE__); } while(false); }
+// clang-format on

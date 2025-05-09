@@ -1,5 +1,5 @@
 -xc++
--std=c++23
+-std=c++26
 -target
 arm-none-eabi
 -Wall

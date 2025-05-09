@@ -21,7 +21,7 @@ build/hdmi.s: build/hdmi.opt.ll
 	llc -o $@ $<
 
 build/hdmi.opt.ll: build/hdmi.ll
-	opt -S -Os --frame-pointer=all --function-sections --thinlto-bc -o $@ $<
+	opt -S @opt_flags.txt -o $@ $<
 
 build/hdmi.ll: $(BOOT_LLS)
 	llvm-link -S -v -o $@ $(BOOT_LLS)

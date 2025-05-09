@@ -4,6 +4,8 @@
 namespace hdmi {
 
 [[gnu::used]] [[gnu::retain]] [[noreturn]] void run() {
+  initLED();
+
   SIO sio;
   u32 counter = 0;
   while (true) {

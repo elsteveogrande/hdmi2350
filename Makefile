@@ -2,6 +2,7 @@ BOOT_LLS := \
 	build/init/image_def.ll \
 	build/init/reset.ll \
 	build/main.ll \
+	build/Util.ll \
 
 all: _build_dirs build/hdmi.bin.uf2
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Reg.h"
+#include "../base/Reg.h"
 
 /*
 Section 9, GPIO

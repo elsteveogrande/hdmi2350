@@ -1,5 +1,5 @@
-#include "Reg.h"
-#include "Types.h"
+#include "../base/Reg.h"
+#include "../base/Types.h"
 
 /*
 Section 9.8, Processor GPIO Controls (SIO)

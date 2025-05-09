@@ -1,4 +1,4 @@
-#include "../SIO.h"
+#include "../hardware/SIO.h"
 #include "init.h"
 
 extern "C" {

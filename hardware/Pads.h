@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Reg.h"
+#include "../base/Reg.h"
 
 /*
 Section 9.11.3. Pad Control - User Bank

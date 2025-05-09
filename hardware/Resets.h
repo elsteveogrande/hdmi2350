@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Reg.h"
+#include "../base/Reg.h"
 
 /*
 Section 7.5, Subsystem Resets

@@ -1,5 +1,5 @@
-#include "SIO.h"
-#include "Util.h"
+#include "hardware/SIO.h"
+#include "util/Util.h"
 
 namespace hdmi {
 

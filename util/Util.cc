@@ -1,7 +1,7 @@
 #include "Util.h"
-#include "GPIO0.h"
-#include "Pads.h"
-#include "SIO.h"
+#include "../hardware/GPIO0.h"
+#include "../hardware/Pads.h"
+#include "../hardware/SIO.h"
 
 /** Initialize the LED GPIO (number 25) */
 void initLED() {

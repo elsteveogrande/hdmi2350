@@ -40,12 +40,13 @@ In general, I want an application and mini-SDK that is small, well-commented,
 and easy to understand, hopefully so others can enjoy digging into the RP2350.
 
 My thoughts about the Pico SDK: if you're building Pico code for any serious
-reason then that SDK is probablt the way to go.  It makes certain things easy and
-mostly shields you from the grittiest details like addresses, registers' bits,
-compiler flags, memory layout; and it's actually supported by Raspberry Pi
-and a community of many professionals and hobbyists.  On the other hand, I like
-those weird things like memory layout, registers, and so on; I enjoy getting
-into _those particular_ weeds so I went this direction instead.
+reason, or if you have something you want to build and are comfortable with the
+SDK already and you just want to get off the ground, then SDK is the way to go.
+It makes certain things easy and mostly shields you from the grittiest details
+like addresses, registers' bits, compiler flags, memory layout.
+And it's actually supported by Raspberry Pi and a community of many professionals and hobbyists.
+On the other hand, I like those weird things like memory layout, registers, and so on.
+I enjoy getting into _those particular_ weeds, so I went this direction instead.
 
 # Limitations
 

@@ -15,7 +15,7 @@ a 320x240 framebuffer at 60 Hz.  More details on that below.
 * Python
 * `make`
 
-Run `make` and copy the resulting `build/hdmi.bin.uf2` onto your Pico2.
+Run `make` and copy the resulting `build/hdmi2350.bin.uf2` onto your Pico2.
 
 Note that this avoids the official `pico-sdk` project, for better or worse.
 Reasons include (and I know some of these are weak)

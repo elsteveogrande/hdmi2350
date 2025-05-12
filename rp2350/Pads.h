@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../base/Reg.h"
+#include "rp2350/Reg.h"
 
 /*
 Section 9.11.3. Pad Control - User Bank
@@ -19,7 +19,7 @@ struct Pads {
       k12mA = 3,
     };
 
-    struct Control : R32 {
+    struct Control : Reg {
       bool  isolation() const { return bit(8); }
       bool  outputDisable() const { return bit(7); }
       bool  inputEnable() const { return bit(6); }
@@ -39,13 +39,13 @@ struct Pads {
       auto slewfast(bool v) const { return bit(0, v); }
     };
 
-    R32     voltage {kBase + 0x00};
+    Reg     voltage {kBase + 0x00};
     Control gpio(u8 i) { return {kBase + 4 + (4 * i)}; }
   };
 
   // constexpr static u32 kBase {0x40020000}; // PADS_QSPI_BASE
 
-  // constexpr static R32     voltage {kBase + 0x00};
+  // constexpr static Reg     voltage {kBase + 0x00};
   // constexpr static Control qspiSCLK {kBase + 0x04};
   // constexpr static Control qspiSD0 {kBase + 0x08};
   // constexpr static Control qspiSD1 {kBase + 0x0c};

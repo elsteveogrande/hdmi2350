@@ -1,15 +1,14 @@
 #include "Util.h"
-#include "../hardware/GPIO0.h"
-#include "../hardware/Pads.h"
-#include "../hardware/SIO.h"
+#include "rp2350/GPIO0.h"
+#include "rp2350/Pads.h"
+#include "rp2350/SIO.h"
 
-/** Initialize the LED GPIO (number 25) */
-void initLED() {
+void initGPIO(u8 index) {
   GPIO0 bank0;
-  bank0.control(25).funcSel(GPIO0::Control::FuncSel::SIO);
+  bank0.control(index).funcSel(GPIO0::Control::FuncSel::SIO);
 
   Pads::UserBank bank;
-  bank.gpio(25)
+  bank.gpio(index)
       .drive(Pads::UserBank::Drive::k12mA)
       .pullDownEnable(false)
       .pullUpEnable(false)
@@ -18,6 +17,6 @@ void initLED() {
       .isolation(0);
 
   SIO sio;
-  sio.gpioOutEnbSet.bit(25, true);
-  sio.gpioOutSet.bit(25, false);
+  sio.gpioOutEnbSet.bit(index, true);
+  sio.gpioOutSet.bit(index, false);
 }

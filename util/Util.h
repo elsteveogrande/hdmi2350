@@ -1,5 +1,15 @@
 #pragma once
 
+#include "rp2350/Types.h"
+
+#if defined(__arm__)
+struct ArmInsns {
+  static void nop() { asm volatile("nop"); }
+  static void wfi() { asm volatile("wfi"); }
+  static void wfe() { asm volatile("wfe"); }
+};
+#endif
+
 /**
 Use like: `_busy_loop(__FILE__, __LINE__);`.
 TODO: actually record where the busy loop happens, for diagnostics;
@@ -15,5 +25,7 @@ inline void _busy_loop(char const* file = nullptr, unsigned line = 0) {
 #define _BUSY_LOOP() { do { _busy_loop(__FILE__, __LINE__); } while(false); }
 // clang-format on
 
-/** Initialize the LED GPIO (number 25) */
-void initLED();
+/** Pico2-specific: LED GPIO is number 25 */
+constexpr u8 kPicoLED = 25;
+
+void initGPIO(u8 index);

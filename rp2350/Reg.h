@@ -26,7 +26,7 @@ static_assert(_u32_mask(8, 0) == 0x000000ff);
 
 } // namespace
 
-struct R32 {
+struct Reg {
   u32 const addr_;
 
   constexpr u32 volatile* reg() const { return (u32 volatile*)(addr_); }
@@ -54,19 +54,19 @@ struct R32 {
   }
 };
 
-struct R32Block : R32 {
+struct RegBlock : Reg {
   __attribute__((always_inline)) auto& flip(this auto&& self, u32 bits) {
-    *(R32 {self.addr_ + 0x1000}.reg()) = bits;
+    *(Reg {self.addr_ + 0x1000}.reg()) = bits;
     return self;
   }
 
   __attribute__((always_inline)) auto& ones(this auto&& self, u32 bits) {
-    *(R32 {self.addr_ + 0x2000}.reg()) = bits;
+    *(Reg {self.addr_ + 0x2000}.reg()) = bits;
     return self;
   }
 
   __attribute__((always_inline)) auto& zeros(this auto&& self, u32 bits) {
-    *(R32 {self.addr_ + 0x3000}.reg()) = bits;
+    *(Reg {self.addr_ + 0x3000}.reg()) = bits;
     return self;
   }
 

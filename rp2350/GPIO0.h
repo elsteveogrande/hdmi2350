@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../base/Reg.h"
+#include "rp2350/Reg.h"
 
 /*
 Section 9, GPIO
@@ -11,7 +11,7 @@ struct GPIO0 {
 
   constexpr static u32 kBank0Base = 0x40028000;
 
-  struct Status : R32 {
+  struct Status : Reg {
     /** IRQTOPROC: interrupt to processors, after override is applied */
     bool irqToProc(this auto& self) { return self.bit(26); }
     /** INFROMPAD: input signal from pad, before override is applied */
@@ -22,7 +22,7 @@ struct GPIO0 {
     bool outToPad(this auto& self) { return self.bit(9); }
   };
 
-  struct Control : R32 {
+  struct Control : Reg {
     enum class Override : u8 {
       kNormal  = 0,
       kInvert  = 1,

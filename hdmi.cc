@@ -1,5 +1,5 @@
-#include "hardware/SIO.h"
-#include "util/Util.h"
+#include "rp2350/SIO.h"
+#include "rp2350/Util.h"
 
 namespace hdmi {
 

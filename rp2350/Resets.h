@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../base/Reg.h"
+#include "rp2350/Reg.h"
 
 /*
 Section 7.5, Subsystem Resets
@@ -41,6 +41,6 @@ struct Resets {
     kUSBCTRL   = 28,
   };
 
-  constexpr static R32Block reset {0x40020000};
-  constexpr static R32Block resetDone {0x40020008};
+  constexpr static RegBlock reset {0x40020000};
+  constexpr static RegBlock resetDone {0x40020008};
 };

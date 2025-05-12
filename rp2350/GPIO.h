@@ -7,7 +7,7 @@ Section 9, GPIO
 https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
 */
 
-struct GPIO0 {
+struct GPIO {
 
   constexpr static u32 kBank0Base = 0x40028000;
 

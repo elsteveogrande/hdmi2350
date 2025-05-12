@@ -1,4 +1,4 @@
-#include "init.h"
+#include "rp2350/Init.h"
 #include "rp2350/SIO.h"
 
 extern "C" {

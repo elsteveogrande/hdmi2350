@@ -42,16 +42,15 @@ Run `make` and copy the resulting `build/hdmi2350.bin.uf2` onto your Pico2.
 According to https://tomverbeure.github.io/video_timings_calculator with
 800x480 @60Hz, and [CVT-RB timings](https://en.wikipedia.org/wiki/Coordinated_Video_Timings#Reduced_blanking):
 
-<table cellpadding="0" cellspacing="1" height="496" width="960" style="border:1px solid #555; scale:70%">
-        <tr height="3"><td width="960">
-          <span class="writing-mode: sizeways-lr; text-orientation: sideways">2</span>
-          <span>VFrontPorch</span>
-        </td>
-        <tr height="7"><td width="960">(7) VSync (negative polarity)</td>
-        <tr height="6"><td width="960">(6) VBackPorch</td>
-        <tr height="480"><td width="960">(480) Image</td>
-  </tr>
-</table>
+<svg>
+<title>A gradient</title>
+      <linearGradient id="gradient">
+        <stop class="begin" offset="0%" stop-color="red" />
+        <stop class="end" offset="100%" stop-color="black" />
+      </linearGradient>
+      <rect x="0" y="0" width="100" height="100" style="fill:url(#gradient)" />
+      <circle cx="50" cy="50" r="30" style="fill:url(#gradient)" />
+</svg>
 
 # SPI Interface
 

@@ -1,5 +1,4 @@
-#include "rp2350/Reg.h"
-#include "rp2350/Types.h"
+#include "RP2350/Common.h"
 
 /*
 Section 9.8, Processor GPIO Controls (SIO)

@@ -1,15 +1,15 @@
-#include "rp2350/SIO.h"
-#include "rp2350/Util.h"
+#include "RP2350/Common.h"
+#include "RP2350/SIO.h"
 
 namespace hdmi {
 
 [[gnu::used]] [[gnu::retain]] [[noreturn]] void run() {
-  initLED();
+  initGPIO(kPicoLED);
 
   SIO sio;
   u32 counter = 0;
   while (true) {
-    sio.gpioOut.bit(25, (counter & (1 << 15)));
+    sio.gpioOut.bit(kPicoLED, (counter & (1 << 15)));
     counter = counter + 1;
     _BUSY_LOOP();
   }

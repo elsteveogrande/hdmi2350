@@ -1,10 +1,14 @@
 #pragma once
 
-#include "rp2350/Types.h"
+#include "RP2350/Common.h"
 
 /*
 Reset handler and basic initialization for the RP2350.
 */
+
+extern "C" {
+extern void _main();
+}
 
 namespace sys {
 

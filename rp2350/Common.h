@@ -1,6 +1,14 @@
 #pragma once
 
-#include "Types.h"
+using u8  = unsigned char;
+using u16 = unsigned short;
+using u32 = unsigned long;
+using u64 = unsigned long long;
+
+static_assert(sizeof(u8) == 1);
+static_assert(sizeof(u16) == 2);
+static_assert(sizeof(u32) == 4);
+static_assert(sizeof(u64) == 8);
 
 namespace {
 
@@ -78,3 +86,31 @@ struct RegBlock : Reg {
     return bool(self.get(b + 1, b));
   }
 };
+
+#if defined(__arm__)
+struct ArmInsns {
+  static void nop() { asm volatile("nop"); }
+  static void wfi() { asm volatile("wfi"); }
+  static void wfe() { asm volatile("wfe"); }
+};
+#endif
+
+/**
+Use like: `_busy_loop(__FILE__, __LINE__);`.
+TODO: actually record where the busy loop happens, for diagnostics;
+TODO: later, make a proper stacktrace object instead.
+*/
+inline void _busy_loop(char const* file = nullptr, unsigned line = 0) {
+  // TODO emit a `nop` instruction, for ARM or RISCV
+  (void)file;
+  (void)line;
+}
+
+// clang-format off
+#define _BUSY_LOOP() { do { _busy_loop(__FILE__, __LINE__); } while(false); }
+// clang-format on
+
+/** Pico2-specific: LED GPIO is number 25 */
+constexpr u8 kPicoLED = 25;
+
+void initGPIO(u8 index);

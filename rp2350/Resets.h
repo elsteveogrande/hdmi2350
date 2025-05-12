@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rp2350/Reg.h"
+#include "RP2350/Common.h"
 
 /*
 Section 7.5, Subsystem Resets

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rp2350/Reg.h"
+#include "RP2350/Common.h"
 
 /*
 Section 9, GPIO

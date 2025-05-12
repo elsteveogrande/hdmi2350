@@ -1,7 +1,5 @@
-#include "rp2350/Init.h"
-#include "rp2350/Types.h"
-
-namespace sys {
+#include "RP2350/Init.h"
+#include "RP2350/Common.h"
 
 /*
 Image definition: section 5.9, "Metadata Block Details".
@@ -67,4 +65,7 @@ In this implementation:
   EndMarker   end {};                    // End magic
 } imageDefARM;
 
-} // namespace sys
+[[gnu::used]] [[gnu::retain]] [[noreturn]] void reset() {
+  _main();
+  __builtin_unreachable();
+}

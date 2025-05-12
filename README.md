@@ -2,10 +2,15 @@
 
 **Work in progress!**
 
-A working, but dirty and incomplete, implementation of HDMI, targeting RP2350.
+Implementation of HDMI, targeting RP2350.
+While I'm developing this with a Pico 2, 99% of this should work on any RP2350 board.
+
+There are a few ways to use this:
+* Copy this repo, and hack it directly for your needs
+* Use another RP2350 as the "VGA Card" of your project
 
 These initial versions support HDMI video (no audio yet), and render
-a 320x240 framebuffer at 60 Hz.  More details on that below.
+a 400x240 framebuffer at 60 Hz.
 
 # Getting started
 
@@ -16,6 +21,8 @@ a 320x240 framebuffer at 60 Hz.  More details on that below.
 * `make`
 
 Run `make` and copy the resulting `build/hdmi2350.bin.uf2` onto your Pico2.
+
+## No SDK
 
 Note that this avoids the official `pico-sdk` project, for better or worse.
 Reasons include (and I know some of these are weak)
@@ -44,7 +51,9 @@ reason, or if you have something you want to build and are comfortable with the
 SDK already and you just want to get off the ground, then SDK is the way to go.
 It makes certain things easy and mostly shields you from the grittiest details
 like addresses, registers' bits, compiler flags, memory layout.
-And it's actually supported by Raspberry Pi and a community of many professionals and hobbyists.
+
+(And it's actually supported by Raspberry Pi and a community of many professionals and hobbyists.)
+
 On the other hand, I like those weird things like memory layout, registers, and so on.
 I enjoy getting into _those particular_ weeds, so I went this direction instead.
 
@@ -62,13 +71,24 @@ I enjoy getting into _those particular_ weeds, so I went this direction instead.
 
 This thing is not fully HDMI compliant, even if it does tend to work with HDMI-licensed / HDMI-certified / whatever equipment.
 
-* Mode: 640x480 @ 60p (the VGA-compatibility mode)
-* Actual resolution: 320x240, aka QVGA, aka 1/27th of 1080p
+* Resolution: 400x240
+  * Mode: 800x480, doubled in X and Y
   * Enough for e.g. an NES emulator (256x240)
-  * I would like to improve this; at the very least I'd like to have a
-    mode that gives you true square pixels in a 16:9 ASR.
+  * I would like to improve this
 * No audio yet!  But two channels at 44.1kHz _should_ be feasible with
   RP2350's ADCs
 
+
+
+
+# Links
+
+https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
+
+## ARM
+https://developer.arm.com/documentation/100235/0100/The-Cortex-M33-Processor/Exception-model/Vector-table
+
+## HDMI video mode
+https://www.reddit.com/r/raspberrypipico/comments/1fj0vxg/can_you_get_169_video_with_hstx/
 
 

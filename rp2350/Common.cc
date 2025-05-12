@@ -1,7 +1,7 @@
-#include "Util.h"
-#include "rp2350/GPIO.h"
-#include "rp2350/Pads.h"
-#include "rp2350/SIO.h"
+#include "RP2350/Common.h"
+#include "RP2350/GPIO.h"
+#include "RP2350/Pads.h"
+#include "RP2350/SIO.h"
 
 void initGPIO(u8 index) {
   GPIO gpio;

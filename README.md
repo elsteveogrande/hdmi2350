@@ -12,7 +12,18 @@ There are a few ways to use this:
 * Copy this repo, and hack it directly for your needs
 * Use another RP2350 as the "VGA Card" of your project, over SPI
 
+```mermaid
+graph LR
+  Client[Client board] -- SPI --> HDMI2350
+  HDMI2350 -- IRQ --> Client
+  Switches -- GPIO --> HDMI2350
+  UART -- USB --> HDMI2350
+  HDMI2350 -- HDMI --> Display
+```
+
 # Getting started
+
+
 
 
 ## Dependencies
@@ -28,6 +39,19 @@ Run `make` and copy the resulting `build/hdmi2350.bin.uf2` onto your Pico2.
 
 ## Mode and Timing
 
+According to https://tomverbeure.github.io/video_timings_calculator with
+800x480 @60Hz, and [CVT-RB timings](https://en.wikipedia.org/wiki/Coordinated_Video_Timings#Reduced_blanking):
+
+<table cellpadding="0" cellspacing="1" height="496" width="960" style="border:1px solid #555; scale:70%">
+        <tr height="3"><td width="960">
+          <span class="writing-mode: sizeways-lr; text-orientation: sideways">2</span>
+          <span>VFrontPorch</span>
+        </td>
+        <tr height="7"><td width="960">(7) VSync (negative polarity)</td>
+        <tr height="6"><td width="960">(6) VBackPorch</td>
+        <tr height="480"><td width="960">(480) Image</td>
+  </tr>
+</table>
 
 # SPI Interface
 
@@ -66,5 +90,5 @@ https://developer.arm.com/documentation/100235/0100/The-Cortex-M33-Processor/Exc
 
 ## HDMI video mode
 https://www.reddit.com/r/raspberrypipico/comments/1fj0vxg/can_you_get_169_video_with_hstx/
-
+https://tomverbeure.github.io/video_timings_calculator
 

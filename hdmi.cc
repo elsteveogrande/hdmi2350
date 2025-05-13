@@ -3,13 +3,18 @@
 
 namespace hdmi {
 
+u8 getSwitch() { return SIO().gpioIn.bit(0); }
+
 [[gnu::used]] [[gnu::retain]] [[noreturn]] void run() {
-  initGPIO(kPicoLED);
+  initGPIOOut(kPicoLED);
+  initGPIOIn(0, true);
 
   SIO sio;
   u32 counter = 0;
   while (true) {
-    sio.gpioOut.bit(kPicoLED, (counter & (1 << 15)));
+    if (getSwitch()) {
+      sio.gpioOut.bit(kPicoLED, (counter & (1 << 14)));
+    }
     counter = counter + 1;
     _BUSY_LOOP();
   }
@@ -18,5 +23,5 @@ namespace hdmi {
 } // namespace hdmi
 
 extern "C" {
-[[noreturn]] void _main() { hdmi::run(); }
+[[noreturn]] void start() { hdmi::run(); }
 }

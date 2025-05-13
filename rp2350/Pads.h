@@ -32,7 +32,7 @@ struct Pads {
       auto isolation(bool v) const { return bit(8, v); }
       auto outputDisable(bool v) const { return bit(7, v); }
       auto inputEnable(bool v) { return bit(6, v); }
-      auto drive(Drive v) const { return set(6, 4, unsigned(v)); }
+      auto drive(Drive v) const { return set(6, 4, u8(v)); }
       auto pullUpEnable(bool v) { return bit(3, v); }
       auto pullDownEnable(bool v) { return bit(2, v); }
       auto schmitt(bool v) const { return bit(1, v); }

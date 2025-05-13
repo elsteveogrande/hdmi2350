@@ -2,7 +2,7 @@
 -target
 arm-none-eabi
 -Wl,-T
--Wl,misc/layout.ld
+-Wl,etc/layout.ld
 -fuse-ld=lld
 -nostdlib
 -g1

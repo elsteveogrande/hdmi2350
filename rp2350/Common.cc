@@ -3,13 +3,14 @@
 #include "RP2350/Pads.h"
 #include "RP2350/SIO.h"
 
-void initGPIO(u8 index) {
+void initGPIOOut(u8 index) {
   GPIO gpio;
   gpio.control(index).funcSel(GPIO::Control::FuncSel::SIO);
 
   Pads::UserBank bank;
   bank.gpio(index)
       .drive(Pads::UserBank::Drive::k12mA)
+      .outputDisable(false)
       .pullDownEnable(false)
       .pullUpEnable(false)
       .schmitt(false)
@@ -19,4 +20,21 @@ void initGPIO(u8 index) {
   SIO sio;
   sio.gpioOutEnbSet.bit(index, true);
   sio.gpioOutSet.bit(index, false);
+}
+
+void initGPIOIn(u8 index, bool pullUp, bool schmitt) {
+  GPIO gpio;
+  gpio.control(index).funcSel(GPIO::Control::FuncSel::SIO);
+
+  Pads::UserBank bank;
+  bank.gpio(index)
+      .inputEnable(true)
+      .pullDownEnable(!pullUp)
+      .pullUpEnable(pullUp)
+      .schmitt(schmitt)
+      .slewfast(true)
+      .isolation(0);
+
+  SIO sio;
+  sio.gpioOutEnbSet.bit(index, false);
 }

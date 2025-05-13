@@ -20,7 +20,7 @@ In this implementation:
 
 [[gnu::section(".init_vec_table")]] [[gnu::used]] [[gnu::retain]] constexpr struct {
   u32 const sp {0x20000400};
-  void (*pc)() {&sys::reset};
+  void (*pc)() {&reset};
 } initialVecTable;
 
 [[gnu::section(".image_def")]] [[gnu::used]] [[gnu::retain]] constexpr struct [[gnu::packed]] {
@@ -59,13 +59,13 @@ In this implementation:
 
   StartMarker start {};                // Start magic
   ImageDef    image {.flags = 0x1021}; // Item 0: CHIP=2350, CPU=ARM, EXE=1, S=2
-  // EntryPoint  entry {.pc = sys::reset};  // Initial SP and PC locations
+  // EntryPoint  entry {.pc = reset};  // Initial SP and PC locations
   LastItem    lastItem {.totalSize = 1}; // Total of preceding items' sizes
   u32         link {0};                  // Single-block loop, so there's no link
   EndMarker   end {};                    // End magic
 } imageDefARM;
 
 [[gnu::used]] [[gnu::retain]] [[noreturn]] void reset() {
-  _main();
+  start();
   __builtin_unreachable();
 }

@@ -39,10 +39,11 @@ Run `make` and copy the resulting `build/hdmi2350.bin.uf2` onto your Pico2.
 
 ## Mode and Timing
 
+<!--
 According to https://tomverbeure.github.io/video_timings_calculator with
 800x480 @60Hz, and [CVT-RB timings](https://en.wikipedia.org/wiki/Coordinated_Video_Timings#Reduced_blanking):
-
 ![](docs/pixeltimings.svg)
+-->
 
 # SPI Interface
 

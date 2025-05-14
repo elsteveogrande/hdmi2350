@@ -1,15 +1,9 @@
 #pragma once
 
-#include "RP2350/Common.h"
-
-/*
-Reset handler and basic initialization for the RP2350.
-*/
+/** Reset vector.  This does basic RP2350 [re-]initialization and jumps to `start`. */
+[[gnu::used]] [[gnu::retain]] [[noreturn]] void reset();
 
 extern "C" {
+/** Application entry point. */
 extern void start();
 }
-
-constexpr u32 const kInitialStackSize {256};
-
-[[gnu::used]] [[gnu::retain]] [[noreturn]] void reset();

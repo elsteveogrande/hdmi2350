@@ -38,3 +38,18 @@ void initGPIOIn(u8 index, bool pullUp, bool schmitt) {
   SIO sio;
   sio.gpioOutEnbSet.bit(index, false);
 }
+
+void initHSTX(u8 index) {
+  GPIO gpio;
+  gpio.control(index).funcSel(GPIO::Control::FuncSel::HSTX);
+
+  Pads::UserBank bank;
+  bank.gpio(index)
+      .drive(Pads::UserBank::Drive::k12mA)
+      .outputDisable(false)
+      .pullDownEnable(false)
+      .pullUpEnable(false)
+      .schmitt(false)
+      .slewfast(true)
+      .isolation(0);
+}

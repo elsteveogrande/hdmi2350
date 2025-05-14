@@ -6,7 +6,7 @@ Implementation of HDMI, targeting RP2350.
 While I'm developing this with a Pico 2, 99% of this should work on any RP2350 board.
 
 These initial versions support HDMI video (no audio yet), and render
-a 432x240 framebuffer at 60 Hz.
+a 400x240 framebuffer at 60 Hz.
 
 There are a few ways to use this:
 * Copy this repo, and hack it directly for your needs
@@ -16,7 +16,6 @@ There are a few ways to use this:
 graph LR
   Client[Client board] -- SPI --> HDMI2350
   HDMI2350 -- IRQ --> Client
-  Switches -- GPIO --> HDMI2350
   UART -- USB --> HDMI2350
   HDMI2350 -- HDMI --> Display
 ```
@@ -64,13 +63,24 @@ According to https://tomverbeure.github.io/video_timings_calculator with
 
 ## HDMI-related limitations
 
-This thing is not fully HDMI compliant, even if it does tend to work with HDMI-licensed / HDMI-certified / whatever equipment.
+This thing is not fully HDMI compliant, even if it does tend to work with
+equipment which is HDMI licensed or certified or whatever.
 
-* Resolution: 432x240
-  * Actual mode: 800x480 (this uses doubling)
+* Resolution: 400x240
+  * Actual mode: 800x480 (doubled in X and Y directions)
   * Enough for e.g. an NES emulator (256x240)
-  * I would like to support more "video modes"
-* No audio yet!  But two channels at 44.1kHz _should_ be feasible with RP2350's ADCs
+
+
+# TODO's
+
+* Audio
+  * ADCs should be able to support stereo 44.1KHz?
+* More video modes:
+  * 480x270 (1/4 of 1080p)
+  * all 60 frames/sec without interlacing
+* Support for "personalities"
+  * Emulate PC text modes
+  * Emulate NES PPU
 
 
 # Links
@@ -84,3 +94,5 @@ https://developer.arm.com/documentation/100235/0100/The-Cortex-M33-Processor/Exc
 https://www.reddit.com/r/raspberrypipico/comments/1fj0vxg/can_you_get_169_video_with_hstx/
 https://tomverbeure.github.io/video_timings_calculator
 
+## Specs for DVI (which also apply to HDMI)
+https://www.cs.unc.edu/Research/stc/FAQs/Video/dvi_spec-V1_0.pdf

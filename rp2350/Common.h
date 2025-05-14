@@ -10,6 +10,10 @@ static_assert(sizeof(u16) == 2);
 static_assert(sizeof(u32) == 4);
 static_assert(sizeof(u64) == 8);
 
+/** These are declared extern here but the addresses are actually defined in the linker script. */
+extern void* __vec_table;
+extern void* __stack_top;
+
 namespace {
 
 [[gnu::pure]] __attribute__((always_inline)) constexpr u32 _u32_mask(auto hi, auto lo) {
@@ -101,9 +105,11 @@ TODO: actually record where the busy loop happens, for diagnostics;
 TODO: later, make a proper stacktrace object instead.
 */
 inline void _busy_loop(char const* file = nullptr, unsigned line = 0) {
-  // TODO emit a `nop` instruction, for ARM or RISCV
   (void)file;
   (void)line;
+#if defined(__arm__)
+  ArmInsns::nop();
+#endif
 }
 
 // clang-format off
@@ -115,3 +121,4 @@ constexpr u8 kPicoLED = 25;
 
 void initGPIOOut(u8 index);
 void initGPIOIn(u8 index, bool pullUp = false, bool schmitt = true);
+void initHSTX(u8 index);

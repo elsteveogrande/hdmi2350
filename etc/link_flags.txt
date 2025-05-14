@@ -1,9 +1,9 @@
 -Wno-unused-command-line-argument
 -target
 arm-none-eabi
--Wl,-T
--Wl,etc/layout.ld
+-Wl,-T,etc/layout.ld
 -fuse-ld=lld
 -nostdlib
 -g1
 -flto
+-Wl,--gc-sections

@@ -21,3 +21,5 @@ arm-none-eabi
 -fno-omit-frame-pointer
 -mno-omit-leaf-frame-pointer
 -I.
+-ffunction-sections
+-fdata-sections

@@ -19,37 +19,37 @@ struct Pads {
       k12mA = 3,
     };
 
-    struct Control : Reg {
-      bool  isolation() const { return bit(8); }
-      bool  outputDisable() const { return bit(7); }
-      bool  inputEnable() const { return bit(6); }
-      Drive drive() const { return Drive(get(6, 4)); }
-      bool  pullUpEnable() const { return bit(3); }
-      bool  pullDownEnable() const { return bit(2); }
-      bool  schmitt() const { return bit(1); }
-      bool  slewfast() const { return bit(0); }
+    Reg32 voltage {kBase + 0x00};
 
-      auto isolation(bool v) const { return bit(8, v); }
-      auto outputDisable(bool v) const { return bit(7, v); }
-      auto inputEnable(bool v) { return bit(6, v); }
-      auto drive(Drive v) const { return set(6, 4, u8(v)); }
-      auto pullUpEnable(bool v) { return bit(3, v); }
-      auto pullDownEnable(bool v) { return bit(2, v); }
-      auto schmitt(bool v) const { return bit(1, v); }
-      auto slewfast(bool v) const { return bit(0, v); }
+    struct ControlStructs {
+      struct Fields {
+        bool  isolation(this auto const& self) { return self.bit(8); }
+        bool  outputDisable(this auto const& self) { return self.bit(7); }
+        bool  inputEnable(this auto const& self) { return self.bit(6); }
+        Drive drive(this auto const& self) { return Drive(self.get(6, 4)); }
+        bool  pullUpEnable(this auto const& self) { return self.bit(3); }
+        bool  pullDownEnable(this auto const& self) { return self.bit(2); }
+        bool  schmitt(this auto const& self) { return self.bit(1); }
+        bool  slewfast(this auto const& self) { return self.bit(0); }
+
+        auto& isolation(this auto const& self, bool v) { return self.bit(8, v); }
+        auto& outputDisable(this auto const& self, bool v) { return self.bit(7, v); }
+        auto& inputEnable(this auto const& self, bool v) { return self.bit(6, v); }
+        auto& drive(this auto const& self, Drive v) { return self.set(6, 4, u8(v)); }
+        auto& pullUpEnable(this auto const& self, bool v) { return self.bit(3, v); }
+        auto& pullDownEnable(this auto const& self, bool v) { return self.bit(2, v); }
+        auto& schmitt(this auto const& self, bool v) { return self.bit(1, v); }
+        auto& slewfast(this auto const& self, bool v) { return self.bit(0, v); }
+      };
+      // clang-format off
+      // Boilerplate for R, U classes
+      struct U;
+      struct R : Fields, Reg<R, U> { explicit R(auto addr) : Reg(addr) {} };
+      struct U : Fields, Update<U, R> { explicit U(auto* reg) : Update(reg) {} };
+      // clang-format on
     };
+    using Control = ControlStructs::R;
 
-    Reg     voltage {kBase + 0x00};
-    Control gpio(u8 i) { return {kBase + 4 + (4 * i)}; }
+    Control gpio(u8 i) { return Control {kBase + 4 + (4 * i)}; }
   };
-
-  // constexpr static u32 kBase {0x40020000}; // PADS_QSPI_BASE
-
-  // constexpr static Reg     voltage {kBase + 0x00};
-  // constexpr static Control qspiSCLK {kBase + 0x04};
-  // constexpr static Control qspiSD0 {kBase + 0x08};
-  // constexpr static Control qspiSD1 {kBase + 0x0c};
-  // constexpr static Control qspiSD2 {kBase + 0x10};
-  // constexpr static Control qspiSD3 {kBase + 0x14};
-  // constexpr static Control qspiSS {kBase + 0x18};
 };

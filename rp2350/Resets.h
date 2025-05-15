@@ -7,6 +7,8 @@ Section 7.5, Subsystem Resets
 https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
 */
 
+/** FIXME: CURRENTLY BROKEN (unused at the moment, fix later) */
+
 struct Resets {
 
   enum class Periph : u8 {

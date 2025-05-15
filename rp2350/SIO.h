@@ -13,18 +13,18 @@ struct SIO {
   // 3.1.11. List of Registers
   constexpr static u32 kBase {0xd0000000}; // SIO_BASE
 
-  constexpr static Reg cpuID {kBase + 0x000};
-  constexpr static Reg gpioIn {kBase + 0x004};
+  constexpr static Reg32 cpuID {kBase + 0x000};
+  constexpr static Reg32 gpioIn {kBase + 0x004};
 
-  constexpr static Reg gpioOut {kBase + 0x010};
-  constexpr static Reg gpioOutSet {kBase + 0x018};
-  constexpr static Reg gpioOutClr {kBase + 0x020};
-  constexpr static Reg gpioOutXor {kBase + 0x028};
+  constexpr static Reg32 gpioOut {kBase + 0x010};
+  constexpr static Reg32 gpioOutSet {kBase + 0x018};
+  constexpr static Reg32 gpioOutClr {kBase + 0x020};
+  constexpr static Reg32 gpioOutXor {kBase + 0x028};
 
-  constexpr static Reg gpioOutEnb {kBase + 0x030};
-  constexpr static Reg gpioOutEnbSet {kBase + 0x038};
-  constexpr static Reg gpioOutEnbClr {kBase + 0x040};
-  constexpr static Reg gpioOutEnbXor {kBase + 0x048};
+  constexpr static Reg32 gpioOutEnb {kBase + 0x030};
+  constexpr static Reg32 gpioOutEnbSet {kBase + 0x038};
+  constexpr static Reg32 gpioOutEnbClr {kBase + 0x040};
+  constexpr static Reg32 gpioOutEnbXor {kBase + 0x048};
 
   // TODO:
   // fifo(Status,Write)

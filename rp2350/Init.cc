@@ -1,5 +1,6 @@
 #include "RP2350/Init.h"
 #include "RP2350/Common.h"
+#include "RP2350/Interrupts.h"
 
 /*
 Image definition: section 5.9, "Metadata Block Details".
@@ -18,10 +19,10 @@ In this implementation:
   even for the `LAST_ITEM` (which contains the total size of prior items).
 */
 
-[[gnu::section(".init_vec_table")]] [[gnu::used]] [[gnu::retain]] constexpr struct {
-  u32 const sp {0x20000400};
-  void (*pc)() {&reset};
-} initialVecTable;
+// [[gnu::section(".init_vec_table")]] [[gnu::used]] [[gnu::retain]] constexpr struct {
+//   u32 const sp {0x20000400};
+//   void (*pc)() {&reset};
+// } initialVecTable;
 
 [[gnu::section(".image_def")]] [[gnu::used]] [[gnu::retain]] constexpr struct [[gnu::packed]] {
   struct [[gnu::packed]] StartMarker {
@@ -54,7 +55,28 @@ In this implementation:
   EndMarker   end {};                    // End magic
 } imageDefARM;
 
+[[gnu::section(".init_vec_table")]]
+extern VectorTable const initVecTable;
+
+[[gnu::section(".vec_table")]]
+VectorTable vecTable {};
+
+/**
+VTOR register.
+See "System control block registers summary" at:
+https://developer.arm.com/documentation/100235/0100/The-Cortex-M33-Peripherals/System-Control-Block/System-control-block-registers-summary?lang=en
+*/
+Reg32 vtor {0xe000ed08};
+
 [[gnu::used]] [[gnu::retain]] [[noreturn]] void reset() {
+  // Copy the initial vector table from flash to at a known location in RAM.
+  u32 const* initTable = (u32 const*)&initVecTable;
+  u32*       table     = (u32*)&vecTable;
+  for (u8 i = 0; i < 64; i++) { table[i] = initTable[i]; }
+
+  // Have the CPU use this new vector table instead of the one in flash.
+  vtor.set(u32(&vecTable));
+
   start();
   __builtin_unreachable();
 }

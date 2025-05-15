@@ -38,58 +38,80 @@ static_assert(_u32_mask(8, 0) == 0x000000ff);
 
 } // namespace
 
-struct Reg {
-  u32 const addr_;
+template <typename W, typename T> struct Word {
+  u32 const addr_ {};
 
-  constexpr u32 volatile* reg() const { return (u32 volatile*)(addr_); }
+  T* addr() const { return (T*)addr_; }
+  T& val() const { return *(addr()); }
 
-  __attribute__((always_inline)) u32 get(this auto&& self, u8 hi, u8 lo) {
-    return (_u32_mask(hi, lo) & *self.reg()) >> lo;
+  __attribute__((always_inline)) u32 get(u8 hi, u8 lo) const {
+    return (_u32_mask(hi, lo) & *this->val()) >> lo;
   }
 
-  __attribute__((always_inline)) auto& set(this auto&& self, u32 z) {
-    *self.reg() = z;
-    return self;
+  __attribute__((always_inline)) auto& set(u32 z) const {
+    this->val() = z;
+    return (W const&)*this;
   }
 
-  __attribute__((always_inline)) auto& set(this auto&& self, u8 hi, u8 lo, u32 z) {
-    *self.reg() = ((~_u32_mask(hi, lo)) & *self.reg()) | (_u32_mask(hi, lo) & (z << lo));
-    return self;
+  __attribute__((always_inline)) auto& set(u8 hi, u8 lo, u32 z) const {
+    this->val() = ((~_u32_mask(hi, lo)) & this->val()) | (_u32_mask(hi, lo) & (z << lo));
+    return (W const&)*this;
   }
 
-  __attribute__((always_inline)) bool bit(this auto&& self, u8 b) {
-    return bool(self.get(b + 1, b));
+  __attribute__((always_inline)) bool bit(u8 i) const {
+    u32 m = 1 << i;
+    return this->val() & m;
   }
 
-  __attribute__((always_inline)) auto& bit(this auto&& self, u8 b, bool v) {
-    return self.set(b + 1, b, v);
+  __attribute__((always_inline)) auto& bit(u8 i, bool v) const {
+    u32 m = 1 << i;
+    if (v) {
+      this->val() |= m;
+    } else {
+      this->val() &= ~m;
+    }
+    return (W const&)*this;
+  }
+};
+
+template <typename U, typename R> struct Update;
+
+template <typename R, typename U> struct Reg : Word<R, u32 volatile> {
+  explicit constexpr Reg(u32 addr) : Word<R, u32 volatile>(addr) {}
+  U update() { return U {this}; }
+};
+
+template <typename U, typename R> struct Update : Word<U, u32> {
+  u32        val {};
+  Reg<R, U>* reg_ {};
+
+  Update()                         = default;
+  Update(Update const&)            = delete;
+  Update& operator=(Update const&) = delete;
+  explicit Update(auto* reg) : Word<U, u32>(u32(&val)), val(reg->val()), reg_(reg) {}
+
+  Update(Update&& rhs) {
+    val      = rhs.val;
+    reg_     = rhs.reg_;
+    rhs.reg_ = nullptr;
+  }
+
+  ~Update() {
+    if (reg_) {
+      reg_->val() = val;
+    }
   }
 };
 
-struct RegBlock : Reg {
-  __attribute__((always_inline)) auto& flip(this auto&& self, u32 bits) {
-    *(Reg {self.addr_ + 0x1000}.reg()) = bits;
-    return self;
-  }
-
-  __attribute__((always_inline)) auto& ones(this auto&& self, u32 bits) {
-    *(Reg {self.addr_ + 0x2000}.reg()) = bits;
-    return self;
-  }
-
-  __attribute__((always_inline)) auto& zeros(this auto&& self, u32 bits) {
-    *(Reg {self.addr_ + 0x3000}.reg()) = bits;
-    return self;
-  }
-
-  __attribute__((always_inline)) auto& bit(this auto&& self, u8 b, bool v) {
-    return v ? self.ones(1 << b) : self.zeros(1 << b);
-  }
-
-  __attribute__((always_inline)) bool bit(this auto&& self, u8 b) {
-    return bool(self.get(b + 1, b));
-  }
+struct Reg32Structs {
+  // clang-format off
+  // Boilerplate for R, U classes
+  struct U;
+  struct R : Reg<R, U> { explicit constexpr R(auto addr) : Reg(addr) {} };
+  struct U : Update<U, R> { explicit U(auto* reg) : Update(reg) {} };
+  // clang-format on
 };
+using Reg32 = Reg32Structs::R;
 
 #if defined(__arm__)
 struct ArmInsns {

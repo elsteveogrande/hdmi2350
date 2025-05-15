@@ -26,7 +26,7 @@ ENTRY(0x10000000)
 
 SECTIONS {
   .init_vec_table (0x10000000)      : {} > FLASH
-  .image_def      (0x10000008)      : {} > FLASH
+  .image_def      (0x10000100)      : {} > FLASH
   .text                             : {} > FLASH
   .data                             : {} > FLASH
   .rodata                           : {} > FLASH

@@ -57,3 +57,8 @@ void initHSTX(u8 index) {
       .slewfast(true)
       .isolation(0);
 }
+
+void convU32Hex(char* out, u32 x) {
+  constexpr static char const hexTable[17] = "0123456789abcdef";
+  for (u8 i = 0; i < 8; i++) { *(out + 7 - i) = hexTable[x & 0x0f]; }
+}

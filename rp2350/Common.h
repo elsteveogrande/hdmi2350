@@ -10,10 +10,6 @@ static_assert(sizeof(u16) == 2);
 static_assert(sizeof(u32) == 4);
 static_assert(sizeof(u64) == 8);
 
-/** These are declared extern here but the addresses are actually defined in the linker script. */
-extern void* __vec_table;
-extern void* __stack_top;
-
 namespace {
 
 [[gnu::pure]] __attribute__((always_inline)) constexpr u32 _u32_mask(auto hi, auto lo) {
@@ -144,3 +140,7 @@ constexpr u8 kPicoLED = 25;
 void initGPIOOut(u8 index);
 void initGPIOIn(u8 index, bool pullUp = false, bool schmitt = true);
 void initHSTX(u8 index);
+
+// Random assorted stuff.
+// XXX Move these
+void convU32Hex(char* out, u32 x);

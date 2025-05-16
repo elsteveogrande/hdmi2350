@@ -1,5 +1,6 @@
 -Os
 --frame-pointer=all
 --function-sections
---thinlto-bc
+--data-sections
 --inline-threshold=4
+--tailcallopt

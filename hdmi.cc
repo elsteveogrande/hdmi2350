@@ -1,6 +1,22 @@
 #include "RP2350/Common.h"
 #include "RP2350/SIO.h"
 
+extern "C" {
+[[gnu::noinline]] void __aeabi_memcpy(u8* dest, const u8* src, unsigned n) {
+  for (unsigned i = 0; i < n; i++) {
+    u8 x = src[i];
+    asm volatile("");
+    dest[i] = x;
+  }
+}
+
+[[gnu::noinline]] void __aeabi_memcpy4(u8* dest, const u8* src, unsigned n) {
+  [[assume(!(u32(dest) & 3))]];
+  [[assume(!(u32(src) & 3))]];
+  __aeabi_memcpy(dest, src, n);
+}
+}
+
 /** These are declared extern here but the addresses are actually defined in the linker script. */
 extern void* __fb;
 extern void* __line0;

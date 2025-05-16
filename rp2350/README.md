@@ -8,7 +8,7 @@ https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
 | Section     | Corresponding impl (`.h`, maybe `.cc`'s)    |
 | ----------- | ---------------------- |
 | 3.1         | `rp2350/SIO.h`         |
-| 3.2         | `rp2350/Interrupts.h`  |
+| 3.2         | `rp2350/VecTable.h`    |
 | 3.3, 3.4    | `rp2350/Events.h`      |
 | 3.5         | `rp2350/Debug.h`       |
 | 6           | `rp2350/Power.h`       |

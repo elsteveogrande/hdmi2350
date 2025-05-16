@@ -5,5 +5,7 @@ arm-none-eabi
 -fuse-ld=lld
 -nostdlib
 -g1
+-gsplit-dwarf
 -flto
 -Wl,--gc-sections
+-ffreestanding

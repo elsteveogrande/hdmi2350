@@ -18,9 +18,9 @@ extern "C" {
 }
 
 /** These are declared extern here but the addresses are actually defined in the linker script. */
-extern void* __fb;
-extern void* __line0;
-extern void* __line1;
+extern void* __fb_base;
+extern void* __tx_line0;
+extern void* __tx_line1;
 
 /**
 Video mode definition; assume CVT-RB.
@@ -125,5 +125,13 @@ extern "C" {
 [[noreturn]] void start() {
   HDMI hdmi;
   hdmi.run();
+}
+
+[[noreturn]] void panic(u32 type, u32 arg1, u32 arg2, u32 arg3) {
+  (void)type;
+  (void)arg1;
+  (void)arg2;
+  (void)arg3;
+  while (true) { _busy_loop(); }
 }
 }

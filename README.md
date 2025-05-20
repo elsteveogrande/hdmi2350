@@ -30,6 +30,9 @@ graph LR
 * LLVM: Clang, LLD.  Needs a new enough version which supports C++26.
 * Python
 * `make`
+* Rust compiler
+  * install via http://rustup.rs
+  * add support for RP2350 ARM: `rustup target add armv7a-none-eabi`
 
 Run `make` and copy the resulting `build/hdmi2350.bin.uf2` onto your Pico2.
 
@@ -89,6 +92,7 @@ https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
 
 ## ARM
 https://developer.arm.com/documentation/100235/0100/The-Cortex-M33-Processor/Exception-model/Vector-table
+https://thejpster.org.uk/blog/blog-2024-08-08/ (RP2350 + Rust info)
 
 ## HDMI video mode
 https://www.reddit.com/r/raspberrypipico/comments/1fj0vxg/can_you_get_169_video_with_hstx/

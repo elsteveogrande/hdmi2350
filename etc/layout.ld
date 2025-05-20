@@ -8,16 +8,16 @@ MEMORY {
 
   /*
   Use these separate, small, fast SRAM regions for line buffers.
-  Generally, even/odd lines rendered into here prior to being sent over HSTX.
+  Even/odd lines rendered into here prior to being sent over HSTX.
   */
   LINE0(rw)       : ORIGIN = 0x20080000, LENGTH = 4k
   LINE1(rw)       : ORIGIN = 0x20081000, LENGTH = 4k
 }
 
 __stack_top = ORIGIN(STACK) + SIZEOF(STACK);
-__fb        = ORIGIN(FRAMEBUFFER);
-__line0     = ORIGIN(LINE0);
-__line1     = ORIGIN(LINE1);
+__fb_base   = ORIGIN(FRAMEBUFFER);
+__tx_line0  = ORIGIN(LINE0);
+__tx_line1  = ORIGIN(LINE1);
 
 /* Not actually used but this will silence warnings */
 ENTRY(0x10000000)
@@ -31,4 +31,6 @@ SECTIONS {
 
   .stack      (NOLOAD)      : {} > STACK
   .bss        (NOLOAD)      : {} > BSS
+
+  .framebuf   (NOLOAD)      : {} > FRAMEBUFFER
 }

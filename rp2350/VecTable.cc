@@ -2,6 +2,7 @@
 
 extern "C" {
 [[noreturn]] void start();
+[[noreturn]] void panic(char const* type, u32 arg1, u32 arg2, u32 arg3);
 }
 
 [[noreturn]] void Handlers::reset() {

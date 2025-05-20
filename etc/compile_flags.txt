@@ -1,7 +1,7 @@
 -xc++
 -std=c++26
 -target
-arm-none-eabi
+armv7a-none-eabi
 -Wall
 -Wextra
 -Wpedantic

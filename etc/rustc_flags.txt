@@ -1,0 +1,3 @@
+--emit=llvm-ir
+-Cpanic=abort
+--target=armv7a-none-eabi

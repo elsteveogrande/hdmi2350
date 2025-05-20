@@ -1,8 +1,9 @@
 LLS := \
-	build/RP2350/Common.ll 		\
-	build/RP2350/ImageDef.ll 	\
-	build/RP2350/VecTable.ll 	\
-	build/hdmi.ll 						\
+	build/RP2350/Common.cc.ll     \
+	build/RP2350/ImageDef.cc.ll   \
+	build/RP2350/VecTable.cc.ll   \
+	build/FrameBuffer.rs.ll       \
+	build/hdmi.cc.ll
 
 all: _build_dirs build/hdmi2350.bin.uf2
 
@@ -24,8 +25,11 @@ build/hdmi2350.opt.ll: build/hdmi2350.ll etc/opt_flags.txt
 build/hdmi2350.ll: $(LLS)
 	llvm-link -S -v -o $@ $(LLS)
 
-build/%.ll: %.cc **/*.h etc/compile_flags.txt
+build/%.cc.ll: %.cc **/*.h etc/compile_flags.txt
 	clang++ @etc/compile_flags.txt -xc++ -S -emit-llvm -o $@ $<
+
+build/%.rs.ll: %.rs etc/rustc_flags.txt
+	rustc @etc/rustc_flags.txt -o $@ $<
 
 _build_dirs:
 	mkdir -p build build/RP2350

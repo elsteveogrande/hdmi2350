@@ -10,15 +10,16 @@ static_assert(sizeof(u16) == 2);
 static_assert(sizeof(u32) == 4);
 static_assert(sizeof(u64) == 8);
 
+using usize = u32;
+static_assert(sizeof(usize) == sizeof(void*));
+
 namespace {
 
 [[gnu::pure]] __attribute__((always_inline)) constexpr u32 _u32_mask(auto hi, auto lo) {
   u32 ret {0};
   if (hi > 0) {
     ret = (hi == 32) ? ~0U : ((1U << hi) - 1);
-    if (lo > 0) {
-      ret ^= _u32_mask(lo, 0);
-    }
+    if (lo > 0) { ret ^= _u32_mask(lo, 0); }
   }
   return ret;
 }
@@ -93,9 +94,7 @@ template <typename U, typename R> struct Update : Word<U, u32> {
   }
 
   ~Update() {
-    if (reg_) {
-      reg_->val() = val;
-    }
+    if (reg_) { reg_->val() = val; }
   }
 };
 

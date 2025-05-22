@@ -13,3 +13,15 @@ random/
 !boot2.s
 priv/
 .foo
+
+
+# Added by cargo
+
+/target
+
+
+# Added by cargo
+#
+# already existing elements were commented out
+
+#/target

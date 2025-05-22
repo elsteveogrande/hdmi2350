@@ -1,8 +1,8 @@
 #include "RP2350/VecTable.h"
+#include "runtime/Panic.h"
 
 extern "C" {
 [[noreturn]] void start();
-[[noreturn]] void panic(char const* type, u32 arg1, u32 arg2, u32 arg3);
 }
 
 [[noreturn]] void Handlers::reset() {
@@ -11,14 +11,17 @@ extern "C" {
 }
 
 void __attribute__((interrupt)) Handlers::nmi() {}
-void __attribute__((interrupt)) Handlers::hardFault() {}
-void __attribute__((interrupt)) Handlers::memManage() {}
-void __attribute__((interrupt)) Handlers::busFault() {}
-void __attribute__((interrupt)) Handlers::usageFault() {}
-void __attribute__((interrupt)) Handlers::svCall() {}
-void __attribute__((interrupt)) Handlers::dbgMon() {}
-void __attribute__((interrupt)) Handlers::pendSV() {}
 void __attribute__((interrupt)) Handlers::sysTick() {}
+
+void __attribute__((interrupt)) Handlers::memManage() {}
+void __attribute__((interrupt)) Handlers::svCall() {}
+void __attribute__((interrupt)) Handlers::pendSV() {}
+
+void __attribute__((interrupt)) Handlers::dbgMon() {}
+
+void __attribute__((interrupt)) Handlers::hardFault() { __panic("hardFault", "", "", 0, 0, 0); }
+void __attribute__((interrupt)) Handlers::busFault() { __panic("busFault", "", "", 0, 0, 0); }
+void __attribute__((interrupt)) Handlers::usageFault() { __panic("usageFault", "", "", 0, 0, 0); }
 
 unsigned volatile FOO;
 

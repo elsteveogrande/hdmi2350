@@ -2,15 +2,26 @@
 #include "RP2350/SIO.h"
 
 extern "C" {
-[[gnu::noinline]] void __aeabi_memcpy(u8* dest, const u8* src, unsigned n) {
+
+// These are defined in `hdmi.rs`
+
+void colorbars();
+
+// C/C++ ABI-specified functions
+
+void __aeabi_memcpy(u8* dest, const u8* src, unsigned n) {
   for (unsigned i = 0; i < n; i++) {
-    u8 x = src[i];
-    asm volatile("");
+    // Read from source and write into dest; the do-nothing `asm volatile`
+    // is only to separate the read and write, to prevent fusing them and optimizing
+    // into a "memcpy" operation involving a call to `__aeabi_memcpy`, the very thing
+    // we're trying to define.
+    u8 x    = src[i];
+    // asm volatile("");  // XXX actually needed??
     dest[i] = x;
   }
 }
 
-[[gnu::noinline]] void __aeabi_memcpy4(u8* dest, const u8* src, unsigned n) {
+void __aeabi_memcpy4(u8* dest, const u8* src, unsigned n) {
   [[assume(!(u32(dest) & 3))]];
   [[assume(!(u32(src) & 3))]];
   __aeabi_memcpy(dest, src, n);
@@ -123,15 +134,9 @@ struct HDMI {
 
 extern "C" {
 [[noreturn]] void start() {
+  colorbars();
+
   HDMI hdmi;
   hdmi.run();
-}
-
-[[noreturn]] void panic(u32 type, u32 arg1, u32 arg2, u32 arg3) {
-  (void)type;
-  (void)arg1;
-  (void)arg2;
-  (void)arg3;
-  while (true) { _busy_loop(); }
 }
 }

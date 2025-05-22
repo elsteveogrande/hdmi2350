@@ -1,7 +1,9 @@
 -xc++
 -std=c++26
 -target
-armv7a-none-eabi
+thumbv8m.main-none-eabi
+-mcpu=cortex-m33
+-mthumb
 -Wall
 -Wextra
 -Wpedantic
@@ -15,8 +17,6 @@ armv7a-none-eabi
 -frtti
 -nostdinc
 -nostdlib
--mcpu=cortex-m0plus
--mthumb
 -g1
 -gsplit-dwarf
 -fPIC

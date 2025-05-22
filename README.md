@@ -10,7 +10,7 @@ a 400x240 framebuffer at 60 Hz.
 
 There are a few ways to use this:
 * Copy this repo, and hack it directly for your needs
-* Use another RP2350 as the "VGA Card" of your project, over SPI
+* Use another RP2350 as the "video card" of your project, over SPI
 
 ```mermaid
 graph LR
@@ -32,7 +32,7 @@ graph LR
 * `make`
 * Rust compiler
   * install via http://rustup.rs
-  * add support for RP2350 ARM: `rustup target add armv7a-none-eabi`
+  * add support for RP2350 ARM: `rustup target add thumbv8m.main-none-eabi`
 
 Run `make` and copy the resulting `build/hdmi2350.bin.uf2` onto your Pico2.
 
@@ -92,7 +92,11 @@ https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
 
 ## ARM
 https://developer.arm.com/documentation/100235/0100/The-Cortex-M33-Processor/Exception-model/Vector-table
-https://thejpster.org.uk/blog/blog-2024-08-08/ (RP2350 + Rust info)
+
+## Rust, including on ARMs or embedded
+https://thejpster.org.uk/blog/blog-2024-08-08/
+https://os.phil-opp.com/minimal-rust-kernel/
+https://doc.rust-lang.org/nomicon/vec/vec-layout.html
 
 ## HDMI video mode
 https://www.reddit.com/r/raspberrypipico/comments/1fj0vxg/can_you_get_169_video_with_hstx/

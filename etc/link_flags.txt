@@ -8,4 +8,5 @@ arm-none-eabi
 -gsplit-dwarf
 -flto
 -Wl,--gc-sections
+-Wl,-strip-all
 -ffreestanding

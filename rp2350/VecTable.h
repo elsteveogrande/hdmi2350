@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RP2350/Common.h"
+#include "runtime/Panic.h"
 
 extern "C" {
 // Addresses for these are defined in the linker script

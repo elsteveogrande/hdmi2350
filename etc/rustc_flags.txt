@@ -1,3 +1,4 @@
---emit=llvm-ir
+--target=thumbv8m.main-none-eabi
+-Ctarget-cpu=cortex-m33
 -Cpanic=abort
---target=armv7a-none-eabi
+-g

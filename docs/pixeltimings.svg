@@ -1,11 +1,69 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="391" height="391" viewBox="-70.5 -70.5 391 391" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<rect fill="#fff" stroke="#000" x="-70" y="-70" width="390" height="390"/>
-<g opacity="0.8">
-	<rect x="25" y="25" width="200" height="200" fill="lime" stroke-width="4" stroke="pink" />
-	<circle cx="125" cy="125" r="75" fill="orange" />
-	<polyline points="50,150 50,200 200,200 200,100" stroke="red" stroke-width="4" fill="none" />
-	<line x1="50" y1="50" x2="200" y2="200" stroke="blue" stroke-width="4" />
-</g>
+<svg width="1008" height="499" viewBox="0 0 1008 499" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<pattern id="sync_h" patternUnits="userSpaceOnUse" width="4" height="4">
+<rect x="0" y="0" width="4" height="4" style="fill:#8be"/>
+<path d="M-1,1 l2,-2  M0,4 l4,-4  M3,5 l2,-2"
+      style="stroke: black; stroke-width: 1" />
+</pattern>
+
+<pattern id="sync_v" patternUnits="userSpaceOnUse" width="4" height="4">
+<rect x="0" y="0" width="4" height="4" style="fill:#8be"/>
+<path d="M0,0  l4,4   M3,-1 l4,4  M-1,3 l4,4"
+      style="stroke: black; stroke-width: 1" />
+</pattern>
+
+<style>
+  text {
+    font-family: monospace;
+    font-size: 11pt;
+  }
+
+  .sync_h {
+    fill: url("#sync_h");
+    opacity: 0.66;
+  }
+
+  .sync_v {
+    fill: url("#sync_v");
+    opacity: 0.66;
+  }
+</style>
+
+<rect fill="#000" stroke="#000" x="0" y="0" width="1008" height="499"/>
+
+<rect fill="#333" stroke="#000" x="0" y="0" width=" 848" height="480" />
+<g transform="translate(  0,42)"><text fill="#fff" transform="rotate(90)">0</text></g>
+<rect x="109" y=  "0" width=  "90" height="480" fill="#fff" />
+<g transform="translate(109,42)"><text fill="#000" transform="rotate(90)">109</text></g>
+<rect x="199" y=  "0" width=  "90" height="480" fill="#ff0" />
+<g transform="translate(199,42)"><text fill="#000" transform="rotate(90)">199</text></g>
+<rect x="289" y=  "0" width=  "90" height="480" fill="#0ff" />
+<g transform="translate(289,42)"><text fill="#000" transform="rotate(90)">289</text></g>
+<rect x="379" y=  "0" width=  "90" height="480" fill="#0f0" />
+<g transform="translate(379,42)"><text fill="#000" transform="rotate(90)">379</text></g>
+<rect x="469" y=  "0" width=  "90" height="480" fill="#f0f" />
+<g transform="translate(469,42)"><text fill="#fff" transform="rotate(90)">469</text></g>
+<rect x="559" y=  "0" width=  "90" height="480" fill="#f00" />
+<g transform="translate(559,42)"><text fill="#fff" transform="rotate(90)">559</text></g>
+<rect x="649" y=  "0" width=  "90" height="480" fill="#00f" />
+<g transform="translate(649,42)"><text fill="#fff" transform="rotate(90)">649</text></g>
+
+<g transform="translate(739,42)"><text fill="#fff" transform="rotate(90)">739</text></g>
+
+<rect x="896" y=  "0" width=  "32" height="499" class="sync_h" />
+<rect x=  "0" y="483" width="1008" height= "10" class="sync_v" />
+
+<g transform="translate(848,42)"><text fill="#fff" transform="rotate(90)">848 HBlank</text></g>
+<g transform="translate(896,42)"><text fill="#fff" transform="rotate(90)">896 HSync</text></g>
+<g transform="translate(928,42)"><text fill="#fff" transform="rotate(90)">928 HBlank</text></g>
+
+<line x1="20" x2="160" y1="480" y2="400" stroke="#999"/>
+<text x="162" y="400">480 VBlank</text>
+<line x1="30" x2="160" y1="483" y2="420" stroke="#999"/>
+<text x="162" y="420">483 VSync</text>
+<line x1="40" x2="160" y1="493" y2="440" stroke="#999"/>
+<text x="162" y="440">493 VBlank</text>
+
 </svg>

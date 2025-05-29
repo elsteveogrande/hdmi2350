@@ -1,4 +1,5 @@
 --target=thumbv8m.main-none-eabi
 -Ctarget-cpu=cortex-m33
 -Cpanic=abort
+-Cllvm-args=--function-sections
 -g

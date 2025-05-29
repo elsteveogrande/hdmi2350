@@ -6,3 +6,5 @@
 Section 12.11. HSTX
 https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
 */
+
+struct HSTX {};

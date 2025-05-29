@@ -17,8 +17,7 @@ thumbv8m.main-none-eabi
 -frtti
 -nostdinc
 -nostdlib
--g1
--gsplit-dwarf
+-g3
 -fPIC
 -I.
 -ffunction-sections

@@ -2,30 +2,8 @@
 #include "RP2350/SIO.h"
 
 extern "C" {
-
-// These are defined in `hdmi.rs`
-
+// Defined in `fb.rs`:
 void colorbars();
-
-// C/C++ ABI-specified functions
-
-void __aeabi_memcpy(u8* dest, const u8* src, unsigned n) {
-  for (unsigned i = 0; i < n; i++) {
-    // Read from source and write into dest; the do-nothing `asm volatile`
-    // is only to separate the read and write, to prevent fusing them and optimizing
-    // into a "memcpy" operation involving a call to `__aeabi_memcpy`, the very thing
-    // we're trying to define.
-    u8 x    = src[i];
-    // asm volatile("");  // XXX actually needed??
-    dest[i] = x;
-  }
-}
-
-void __aeabi_memcpy4(u8* dest, const u8* src, unsigned n) {
-  [[assume(!(u32(dest) & 3))]];
-  [[assume(!(u32(src) & 3))]];
-  __aeabi_memcpy(dest, src, n);
-}
 }
 
 /** These are declared extern here but the addresses are actually defined in the linker script. */
@@ -110,11 +88,14 @@ struct HDMI {
     // Set up HSTX pins
     for (u8 i = 12; i < 20; i++) { initHSTX(i); }
 
+    // TODO: p1203 HSTX pin configs
+
     // Set up HSTX IRQ
 
     // Set up HSTX DMA
 
-    // Set up framebuffer
+    // Set up framebuffer: init with simply a colorbar pattern
+    colorbars();
 
     // Set up line buffers
 
@@ -134,8 +115,6 @@ struct HDMI {
 
 extern "C" {
 [[noreturn]] void start() {
-  colorbars();
-
   HDMI hdmi;
   hdmi.run();
 }

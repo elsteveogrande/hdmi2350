@@ -1,150 +1,111 @@
 # hdmi2350
 
-**Work in progress!**
+<p style="color:#ff0">
+<b>(Work still in progress)</b>
+</p>
 
-Implementation of HDMI, targeting RP2350.
-While I'm developing this with a Pico 2, 99% of this should work on any RP2350 board.
-
-These initial versions support HDMI video (no audio yet), and render
-a 848x480 framebuffer at 60 Hz.
-
-There are a few ways to use this:
-* Copy this repo, and hack it directly for your needs
-* Use another RP2350 as the "video card" of your project, over SPI
-
-```mermaid
-graph LR
-  Client[Client board] -- SPI --> HDMI2350
-  HDMI2350 -- IRQ --> Client
-  USB -- UART --> HDMI2350
-  HDMI2350 -- HDMI --> Display
-```
-
-# Getting started
+* HDMI output device and frame buffer
+* SPI input (peripheral) interface for image data
+* 864 x 486 @ 60p
 
 
+# HDMI Generator
+
+Until this thing is able to change resolutions on the fly,
+we have this one fixed resolution of `864 x 486 @ 60p`.
+
+This is the best resolution I could find that fit some constraints:
+* Perfectly 16:9 aspect ratio
+* Framebuffer of ~ 420kB fits in RP2350 main SRAM (512kB),
+  using RGB332
+* It's near the "target" line count of 480
+  (supporting common modes like 640x480 and wider)
+* Essentially the maximum amount of detail possibly in
+  NTSC (standard-def) video
+
+Further, this mode's pixel clock is near 30 MHz.
+If we tweak the HBlank period to lengthen the time of each line,
+we can then achieve a *range* of frames per second,
+around ±1% (59 to 61 fps).
+
+I queried
+[video_timings_calculator](https://tomverbeure.github.io/video_timings_calculator)
+with the parameters for `864 x 486 @ 60p`.
+
+I found these custom HBlank values are able to achieve
+varying frame rates.  Note that this calculator adjusts
+the pixel clock when you change HBlank, because it keeps
+the VFreq at what you requested (at 60).
+I'm assuming that if we hold the clock fixed at 30 MHz,
+then we can tweak the frame rate instead.
+
+| HBlank period (pixel-times) | PixelClock MHz (@ fixed 60Hz frame rate) | VFreq (@ fixed 30.0MHz px clock) |
+|--|--|--|
+| 126 | 29.7 | 59.4 |
+| 136 | 30.0 | 60.0 |
+| 146 | 30.3 | 60.6 |
+
+This allows us to tweak our timing very slightly
+(less than 1% in practice) in case we need to match
+another video source with a clock we can't control.
+For example this allows for an NTSC-to-HDMI converter
+generating frames at a rate almost perfectly matching the source
+(say, a composite video signal from an NES).
+
+I'm *expecting* that such fudging of line timings
+won't cause instability or incompatibility with the receiver,
+since this modifies HBlank (porches and HSync) only a little,
+while preserving vsync and vblank line counts.
+
+(Eventually this should allow for self-governing or PID-controlling
+the output line or frame rate.  But right now we're only targeting 60.0 fps.)
+
+## HDMI Timing
+
+The following is the result of our calculations,
+with thanks again going to `@tomverbeure` for the [video_timings_calculator](https://tomverbeure.github.io/video_timings_calculator).
+
+|                    | fixed   | variable          | |
+|------------------- | -------------|-----------|---|
+| AspectRatio       | 16:9 |
+| PixelClock | 30  | | MHz |
+| VActive | 486 | | Lines |
+| VBlank | 14 | | Lines |
+| VFront | 3 | | Lines |
+| VSync | 5 | | Lines |
+| VBack | 6 | | Lines |
+| VTotal | 500 | | Lines |
+| VFreq | 60 | *59.4 .. 60.6* | Hz |
+| VPeriod | 16.667 | | ms |
+| HActive | 864 || Pixels |
+| HBlank | 136 Pixels | *126 .. 146* | Pixels |
+| HFront | 40 |  | Pixels |
+| HSync | 32 |   | Pixels |
+| HBack | 64 | $`HBlank-HFront-HSync`$ | Pixels |
+| HTotal | 1000 | *990 .. 1010* | Pixels |
+| HFreq | 30 | *30.3 .. 29.7* | KHz |
+| HPeriod | 33.333 | *33.0 .. 33.666* | µs |
+
+Notes:
+* Assumes fixed `HBlank` to get the 60Hz frame rate at 30MHz pixel clock.
+* HFront/Back/Sync ratios taken from CVT-RB column.
+* Effective HBlank (sync and porches) are within the
+  CVT-RB and CVT-RBv2 values, which vary a lot, so I
+  assume these have decent compatibility with receivers.
 
 
-## Dependencies
+# HDMI Pixel Map
 
-* LLVM: Clang, LLD.  Needs a new enough version which supports C++26.
-* Python
-* `make`
-* Rust compiler
-  * install via http://rustup.rs
-  * add support for RP2350 ARM: `rustup target add thumbv8m.main-none-eabi`
+The resulting `500,000` pixels (1000 wide * 500 high),
+consisting of control signals, data signals, and actual video pixels,
+are arranged like so.  They're transmitted top-down and left-right.
 
-Run `make` and copy the resulting `build/hdmi2350.bin.uf2` onto your Pico2.
-
-
-# HDMI
-
-## Mode and Timing
-
-According to https://tomverbeure.github.io/video_timings_calculator with
-848x480 @60Hz, and [CVT-RB timings](https://en.wikipedia.org/wiki/Coordinated_Video_Timings#Reduced_blanking):
 ![](docs/pixeltimings.svg)
 
-* Lines: 499 total (480 active, 3 frontporch, 10 sync, 6 backporch)
-* Each line: 1008 total (848 active, 48 front, 32 sync, 80 back)
-
-The relevant section of the HDMI 1.4 spec (find a link to the PDF below)
-is Section 5, "Signaling and Encoding".  This is all about the encoding of
-symbols (TMDS) for pixel and control data.
-
-A rough outline and discussion of that section and how we're using it here.
-
-* 5.1.1. Link Architecture
-  * There are three channels CH0, CH1, and CH2; plus a clock signal.
-  * The three channels represent blue, green, and red (and together, the control signals).
-  * RGB values of 0 to 255 are encoded as 10-bit symbols, specified earlier in DVI 1.0.
-    You can find the crazy chart in the DVI PDF describing how to encode values,
-    or just let the RP2350 deal with that for you.
-    * Example RGB values.  Let's take the 8-bit value `60`; this encodes to `0b0111101001`,
-      which has approximately as many zeroes as ones.  The on/off patterns going physically
-      through the HDMI cable cause a very small (but non-zero) amount of electromagnetic activity,
-      so they want DVI/HDMI transmitters to send electrically-balanced encodings of data.
-      (Very hand-wavey explanation, I know.  But if you're interested
-      there's much, much more info available about this.)
-    * In the interest of electrically-balancing the data, we should actually be keeping
-      track of the counts of ones and zeros, and if we're in a "deficit" of ones or zeros
-      (i.e. imbalanced) there's an alternative way to encode the same byte of data
-      with those 10 bits.  I won't go into that here, but again, see the crazy diagram in
-      the DVI PDF, if you want.  (Again the RP2350 handles that for us)
-  * Non-pixel data, like control signals, have specific bit patterns.
-    * `CH0` has two signals to represent `HSYNC` and `VSYNC` states
-    * `CH1` has patterns to represent `CTL0` and `CTL1`
-    * `CH2` has patterns to represent `CTL2` and `CTL3`
-    * See the timing diagram above; the HSYNC and VSYNC periods are shown,
-      during which the sync signals are output on the CH0 lines.
-    * Examples of CTL bits below.
-* 5.2.1.1. Preamble
-  * "Immediately preceding each Video Data Period or Data Island Period is the Preamble."
-  * (We'll get into data islands at some other time)
-  * CTL signals for a video period is `0b1000`, data island `0b1010`
-  * The preamble consists of 8 identical control characters
-* 5.2.1.2. Character Synchronization
-  * Talks about needing to identify the locations of certain character boundaries, etc.
-  * Really, this is more about how and when to frame control signals.
-    * `Minimum Duration Control Period: 12 pixel-times`
-  * "Extended control periods":
-    * `Maximum time between Extended Control Periods: 50 ms`
-    * `Minimum duration Extended Control Period: 32 pixel-times`
-    * Apparently ECP's are required at least every 50ms, e.g., maybe we'll send one per frame.
-      VBlank is a good time to send these long-ish (>= 32 pixel) control periods;
-      since we're always sending at 60p, that's once every 16ms.
-* 5.2.2. Video Data Period
-  * This is when we send the pixels
-  * First there's the preamble (above)
-  * Then a "two character Video Leading Guard Band".  (There's no "trailing" band)
-  * 5.2.2.1. Video Guard Band: specifies three 10-bit symbols for `CH0, 1, 2`.
-* 5.2.3. Data Island Period
-  * This is how we would send non-video (e.g., audio!) but we're not there yet.
-
-
-# SPI Interface
-
-## Commands
-
-## Interrupts
-
-
-# Limitations
-
-## RP2350-related limitations
-
-* Currently only supports GPIOs 0 through 29
-* Not attempting backwards compatibility with RP2040 (sorry)
-  - The XIP and boot2 initial setup is a pain
-  - Supporting two different-enough chips is difficult
-* Still only targeting ARM (Cortex-M33); no RISC-V fun yet
-
-
-## HDMI-related limitations
-
-This thing is not fully HDMI compliant, even if it does tend to work with
-equipment which is HDMI licensed or certified or whatever.
-
-* Resolution: 840x480
-  - 403200 pixels, 24.2Mpx/sec @ 8-bit RGB332
-  - with X/Y doubling, 420x240 (108000 pixels, 6.05Mpx/sec)
-  - 1.75 aspect ratio (1.5% away from 16:9)
-* No audio yet!
-
-
-# TODO's
-
-* Audio
-  - ADCs should be able to support stereo 44.1KHz?
-* More video modes:
-  - 480x270 (1/4 of 1080p)
-  - all 60 frames/sec without interlacing
-* Allow improved color depth
-  - currently only RGB332
-* Offload drawing computation from host system:
-  - Convenient and reusable display adapter with a simple interface
-  - Reduces bandwidth (don't need to blast entire bitmaps at this thing)
-  - Do the computations closer to the video memory
+Notes:
+* As mentioned above, different HBackPorch periods can be
+  used to adjust actual frame rate, and this image only reflects
+  the target of 60.0 Hz.
 
 
 # Links
@@ -166,3 +127,17 @@ https://tomverbeure.github.io/video_timings_calculator
 ## Specs for DVI and HDMI, which somehow are publicly available
 * DVI 1.0: https://www.cs.unc.edu/Research/stc/FAQs/Video/dvi_spec-V1_0.pdf
 * HDMI 1.4: https://forums.parallax.com/discussion/download/128730/Hdmi-1.4-1000008562-6364143185282736974850538.pdf
+
+
+# Misc
+
+This project's documentation and code mention the term `hdmi`
+a lot, but this is not guaranteed to be strictly HDMI compliant,
+and is of course not licensed by "HDMI Licensing, LLC".
+No warranties, no refunds, not for use in life-saving devices.
+
+
+
+# License
+
+Open source and made available under the MIT License.

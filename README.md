@@ -15,10 +15,29 @@ with limited display capabilities, and audio.
 * PCM Audio
   * Two channels
   * 44.1 kHz
-* SPI interface
+* Data interface
+  * Different interfaces available:
+    - SPI in peripheral mode: max rate is 12.5 mbit/s
+    - I2C: using "fast mode plus", 1mbit/s
+    - Parallel mode (see below)
   * Raw image data
   * Text buffer
   * Draw commands
+
+
+# Parallel Interface
+
+This option exists because the full pixel rate of
+$`864 \cdot 486 \cdot 60 = 25.2Mbytes/sec`$
+far exceeds the rates of other interfaces (SPI, I2C).
+
+## Signals
+
+
+## Message Format
+
+
+### Messages
 
 
 # HDMI Generator
@@ -77,26 +96,26 @@ the output line or frame rate.  But right now we're only targeting 60.0 fps.)
 The following is the result of our calculations,
 with thanks again going to `@tomverbeure` for the [video_timings_calculator](https://tomverbeure.github.io/video_timings_calculator).
 
-|                    | fixed   | variable          | |
-|------------------- | -------------|-----------|---|
+|                    | fixed   | variable    | mid-range (and default)      | |
+|------------------- | -------------|-----------|---|---|
 | AspectRatio       | 16:9 |
-| PixelClock | 30  | | MHz |
-| VActive | 486 | | Lines |
-| VBlank | 14 | | Lines |
-| VFront | 3 | | Lines |
-| VSync | 5 | | Lines |
-| VBack | 6 | | Lines |
-| VTotal | 500 | | Lines |
-| VFreq | 60 | *59.4 .. 60.6* | Hz |
-| VPeriod | 16.667 | | ms |
-| HActive | 864 || Pixels |
-| HBlank | 136 Pixels | *126 .. 146* | Pixels |
-| HFront | 40 |  | Pixels |
-| HSync | 32 |   | Pixels |
-| HBack | 64 | $`HBlank-HFront-HSync`$ | Pixels |
-| HTotal | 1000 | *990 .. 1010* | Pixels |
-| HFreq | 30 | *30.3 .. 29.7* | KHz |
-| HPeriod | 33.333 | *33.0 .. 33.666* | µs |
+| PixelClock | 30  | | | MHz |
+| VActive | 486 | | | Lines |
+| VBlank | 14 | | | Lines |
+| VFront | 3 | | | Lines |
+| VSync | 5 | | | Lines |
+| VBack | 6 | | | Lines |
+| VTotal | 500 | | | Lines |
+| VFreq | 60 | *59.4 .. 60.6* | | Hz |
+| VPeriod | 16.667 | | | ms |
+| HActive | 864 | | | Pixels |
+| HBlank |  | *126 .. 146* | 136 | Pixels |
+| HFront | 40 |  | | Pixels |
+| HSync | 32 |   | | Pixels |
+| HBack |  | $`HBlank-HFront-HSync`$ | 64 | Pixels |
+| HTotal |  | *990 .. 1010* | 1000 | Pixels |
+| HFreq |  | *30.3 .. 29.7* | 30 | KHz |
+| HPeriod |  | *33.0 .. 33.666* | 33.333| µs |
 
 Notes:
 * Assumes fixed `HBlank` to get the 60Hz frame rate at 30MHz pixel clock.

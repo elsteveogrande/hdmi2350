@@ -20,7 +20,7 @@ impl Color {
 
 #[repr(C)]
 pub struct FrameBuffer {
-  pub pixels: [[Color; 840]; 480],
+  pub pixels: [[Color; 864]; 486],
 }
 
 impl FrameBuffer {
@@ -30,13 +30,21 @@ impl FrameBuffer {
   }
 
   pub fn colorbars(self: &mut FrameBuffer) -> () {
-    self.rect(0, 0, 400, 300, Color::new(1, 1, 1))
+    let mut x: usize = 0;
+    self.rect(x, 0, 108, 486, Color::new(2, 2, 1)); x += 108;
+    self.rect(x, 0, 108, 486, Color::new(7, 7, 3)); x += 108;
+    self.rect(x, 0, 108, 486, Color::new(7, 7, 0)); x += 108;
+    self.rect(x, 0, 108, 486, Color::new(0, 7, 3)); x += 108;
+    self.rect(x, 0, 108, 486, Color::new(0, 7, 0)); x += 108;
+    self.rect(x, 0, 108, 486, Color::new(7, 0, 3)); x += 108;
+    self.rect(x, 0, 108, 486, Color::new(7, 0, 0)); x += 108;
+    self.rect(x, 0, 108, 486, Color::new(0, 0, 3));
   }
 }
 
 #[unsafe(link_section = ".framebuf")]
 static mut FB: FrameBuffer =
-  FrameBuffer {pixels: [[Color::new(0, 0, 0); 400]; 240]};
+  FrameBuffer {pixels: [[Color::new(0, 0, 0); 864]; 486]};
 
 #[no_mangle]
 pub fn colorbars() -> () {

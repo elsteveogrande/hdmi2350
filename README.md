@@ -4,9 +4,21 @@
 <b>(Work still in progress)</b>
 </p>
 
+Audio and video output using a Pico2.
+
+This project aims to provide a pretty decent HDMI implementation,
+with limited display capabilities, and audio.
+
 * HDMI output device and frame buffer
-* SPI input (peripheral) interface for image data
-* 864 x 486 @ 60p
+  * 864 x 486 @ 60p
+  * 256 colors, RGB332 format
+* PCM Audio
+  * Two channels
+  * 44.1 kHz
+* SPI interface
+  * Raw image data
+  * Text buffer
+  * Draw commands
 
 
 # HDMI Generator
@@ -106,6 +118,120 @@ Notes:
 * As mentioned above, different HBackPorch periods can be
   used to adjust actual frame rate, and this image only reflects
   the target of 60.0 Hz.
+
+
+## HDMI Protocol
+
+With that basic overview of how this resolution and its timing works, we need to talk about
+the HDMI signaling lines, and operating modes.
+These are described in the HDMI spec, section 5.
+
+There are three modes: Control, Data Island, and Video Data.
+
+I'll call "Data Island" simply "data mode",
+and "video data" as "video mode".
+
+```mermaid
+graph LR
+  Data --> Control --> Video;
+  Video --> Control;
+  Control --> Data;
+```
+
+### Link Architecture (5.1.1)
+
+There are 4 pairs of differential lines in HDMI; one of which is the clock signal,
+running at the pixel clock frequency (i.e. 30 MHz in our case).  The other 3 transmit
+at 10x that rate, converting pixel/data/video to 10-bit symbols.
+
+Across the three channels, and depending on the HDMI link's current "operating mode",
+these channels each contain:
+* 2 bits of control data
+* 4 bits of data, where CH0 contains the packet header, and CH1-2 contain 8 bits of payload
+* 8 bits of pixel values, where CH0, 1, 2 transmit blue, green, red levels respectively
+
+### Operating Modes Overview (5.1.2)
+
+The HDMI link is in one of these modes, and the transitions are only as illustrated above.
+We can't jump between video and data; there needs to be a control period in between.
+
+### Control (5.2.1)
+
+Control-mode data have 6 bits, split up as 2 bits on each of the 3 channels.
+
+[Note that the HDMI spec shows weird bit orderings;
+I'm trying my best to make sure these table are all correct.]
+
+<table border="1">
+  <tr>
+    <td colspan="2">Channel 2</td>
+    <td colspan="2">Channel 1</td>
+    <td colspan="2">Channel 0</td>
+  </tr>
+  <tr>
+    <td>D1</td>
+    <td>D0</td>
+    <td>D1</td>
+    <td>D0</td>
+    <td>D1</td>
+    <td>D0</td>
+  </tr>
+  <tr>
+    <td>CTL3</td>
+    <td>CTL2</td>
+    <td>CTL1</td>
+    <td>CTL0</td>
+    <td>VSync</td>
+    <td>HSync</td>
+  </tr>
+</table>
+
+The control bits in `CTL[3..0]` may contain a preamble:
+* `0001`: video preamble
+* `0101`: data preamble
+
+We'll assume bits `0000` are a no-op control code,
+in which case we're sending HSync and/or VSync, or simply idle at that time.
+
+Ignore the other 13 CTL values.  They're either not currently defined by the spec
+or are used for HDCP or something else we're not concerned with.
+
+Note that when sending a preamble, that code in CTL3..0 must be transmitted 8 consecutive times,
+immediately before the data or video period.
+
+
+## Control Period Coding (5.4.2)
+
+So as we can see, we have 2 bits across each of the 3 channels.
+These 2 bits are converted to one of the following 10 bit encodings
+and the three channels are sending one of these codes based on their D[1..0].
+
+| D1 | D0 | TMDS Symbol  |
+| -- | -- | --           |
+|  0 |  0 | `1101010100` |
+|  0 |  1 | `0010101011` |
+|  1 |  0 | `0101010100` |
+|  1 |  1 | `1010101011` |
+
+
+## Data Island Period (5.2.3)
+
+Data islands can represent lots of different things like
+color gamuts, info frames, "general" control (like `MUTE` etc).
+The ones we care about however are: the Audio Sample Packet in 5.3.4,
+and Audio InfoFrame in section 8.2.
+
+Note that data islands can happen alongside HSync and VSync signals,
+which requires a TERC4 symbol to be presented at CH0.
+For simplicity, let's never do this, and dedicate space within VBlank,
+outside of VSyncs and HSyncs.
+
+
+### Island Placement and Duration (5.2.3.2)
+
+
+
+
 
 
 # Links

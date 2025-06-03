@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="1008" height="499" viewBox="0 0 1008 499" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="1000" height="500" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
 <pattern id="sync_h" patternUnits="userSpaceOnUse" width="4" height="4">
 <rect x="0" y="0" width="4" height="4" style="fill:#8be"/>
@@ -16,8 +16,8 @@
 
 <style>
   text {
-    font-family: monospace;
-    font-size: 11pt;
+    font-family: Geneva, monospace;
+    font-size: 8pt;
   }
 
   .sync_h {
@@ -29,41 +29,45 @@
     fill: url("#sync_v");
     opacity: 0.66;
   }
+
+  .active {
+    fill: none;
+    stroke: #fff;
+    opacity: 0.5;
+    stroke-dasharray: 2 2;
+  }
 </style>
 
-<rect fill="#000" stroke="#000" x="0" y="0" width="1008" height="499"/>
+<rect fill="#000" stroke="#000" x="0" y="0" width="1000" height="500"/>
 
-<rect fill="#333" stroke="#000" x="0" y="0" width=" 848" height="480" />
-<g transform="translate(  0,42)"><text fill="#fff" transform="rotate(90)">0</text></g>
-<rect x="109" y=  "0" width=  "90" height="480" fill="#fff" />
-<g transform="translate(109,42)"><text fill="#000" transform="rotate(90)">109</text></g>
-<rect x="199" y=  "0" width=  "90" height="480" fill="#ff0" />
-<g transform="translate(199,42)"><text fill="#000" transform="rotate(90)">199</text></g>
-<rect x="289" y=  "0" width=  "90" height="480" fill="#0ff" />
-<g transform="translate(289,42)"><text fill="#000" transform="rotate(90)">289</text></g>
-<rect x="379" y=  "0" width=  "90" height="480" fill="#0f0" />
-<g transform="translate(379,42)"><text fill="#000" transform="rotate(90)">379</text></g>
-<rect x="469" y=  "0" width=  "90" height="480" fill="#f0f" />
-<g transform="translate(469,42)"><text fill="#fff" transform="rotate(90)">469</text></g>
-<rect x="559" y=  "0" width=  "90" height="480" fill="#f00" />
-<g transform="translate(559,42)"><text fill="#fff" transform="rotate(90)">559</text></g>
-<rect x="649" y=  "0" width=  "90" height="480" fill="#00f" />
-<g transform="translate(649,42)"><text fill="#fff" transform="rotate(90)">649</text></g>
+<rect x="0"   y=  "0" width= "108" height="486" fill="#444" />
+<g transform="translate(  3,42)"><text fill="#fff" transform="rotate(90)">0x45; rgb332(1,1,1)</text></g>
+<rect x="108" y=  "0" width= "108" height="486" fill="#fff" />
+<g transform="translate(111,42)"><text fill="#000" transform="rotate(90)">0xff; rgb332(7,7,3)</text></g>
+<rect x="216" y=  "0" width= "108" height="486" fill="#ff0" />
+<g transform="translate(219,42)"><text fill="#000" transform="rotate(90)">0xfc; rgb332(7,7,0)</text></g>
+<rect x="324" y=  "0" width= "108" height="486" fill="#0ff" />
+<g transform="translate(327,42)"><text fill="#000" transform="rotate(90)">0x1f; rgb332(0,7,3)</text></g>
+<rect x="432" y=  "0" width= "108" height="486" fill="#0f0" />
+<g transform="translate(435,42)"><text fill="#000" transform="rotate(90)">0x1c; rgb332(0,7,0)</text></g>
+<rect x="540" y=  "0" width= "108" height="486" fill="#f0f" />
+<g transform="translate(543,42)"><text fill="#fff" transform="rotate(90)">0xe3; rgb332(7,0,3)</text></g>
+<rect x="648" y=  "0" width= "108" height="486" fill="#f00" />
+<g transform="translate(651,42)"><text fill="#fff" transform="rotate(90)">0xe0; rgb332(7,0,0)</text></g>
+<rect x="756" y=  "0" width= "108" height="486" fill="#00f" />
+<g transform="translate(759,42)"><text fill="#fff" transform="rotate(90)">0x03; rgb332(0,0,3)</text></g>
 
-<g transform="translate(739,42)"><text fill="#fff" transform="rotate(90)">739</text></g>
+<rect x="904" y=  "0" width=  "32" height="500" class="sync_h" />
+<rect x=  "0" y="489" width="1000" height=  "5" class="sync_v" />
 
-<rect x="896" y=  "0" width=  "32" height="499" class="sync_h" />
-<rect x=  "0" y="483" width="1008" height= "10" class="sync_v" />
+<g transform="translate(867,42)"><text fill="#fff" transform="rotate(90)">X=864 HFrontPorch (40)</text></g>
+<g transform="translate(907,42)"><text fill="#fff" transform="rotate(90)">X=904 HSyncActive (32)</text></g>
+<g transform="translate(939,42)"><text fill="#fff" transform="rotate(90)">X=936 HBackPorch (≥ 64)</text></g>
 
-<g transform="translate(848,42)"><text fill="#fff" transform="rotate(90)">848 HBlank</text></g>
-<g transform="translate(896,42)"><text fill="#fff" transform="rotate(90)">896 HSync</text></g>
-<g transform="translate(928,42)"><text fill="#fff" transform="rotate(90)">928 HBlank</text></g>
+<line x1="20" x2="160" y1="486" y2="400" stroke="#999"/><text x="162" y="400">Y=486: VFrontPorch (3)</text>
+<line x1="30" x2="160" y1="489" y2="420" stroke="#999"/><text x="162" y="420">Y=489: VSyncActive (5)</text>
+<line x1="40" x2="160" y1="494" y2="440" stroke="#999"/><text x="162" y="440">Y=494: VBackPorch (6)</text>
 
-<line x1="20" x2="160" y1="480" y2="400" stroke="#999"/>
-<text x="162" y="400">480 VBlank</text>
-<line x1="30" x2="160" y1="483" y2="420" stroke="#999"/>
-<text x="162" y="420">483 VSync</text>
-<line x1="40" x2="160" y1="493" y2="440" stroke="#999"/>
-<text x="162" y="440">493 VBlank</text>
+<rect x="0" y="0" width="864" height="486" class="active" />
 
 </svg>

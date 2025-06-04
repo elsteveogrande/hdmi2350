@@ -86,7 +86,7 @@ struct HDMI {
     sio.gpioOut.bit(kPicoLED, true);
 
     // Set up HSTX pins
-    for (u8 i = 12; i < 20; i++) { initHSTX(i); }
+    // for (u8 i = 12; i < 20; i++) { initHSTX(i); }
 
     // TODO: p1203 HSTX pin configs
 
@@ -95,7 +95,7 @@ struct HDMI {
     // Set up HSTX DMA
 
     // Set up framebuffer: init with simply a colorbar pattern
-    colorbars();
+    // colorbars();
 
     // Set up line buffers
 
@@ -104,7 +104,8 @@ struct HDMI {
     // DMA takes over from here and all the HDMI activity is IRQ-driven.
     // Nothing else for `run` to do; just blink the LED to show that we're up and running.
     while (true) {
-      sio.gpioOut.bit(kPicoLED, frame_ & 1);
+      // sio.gpioOut.bit(kPicoLED, (frame_ >> 10) & 1);
+      // ++frame_;
       _BUSY_LOOP();
     }
   }

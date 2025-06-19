@@ -1,4 +1,4 @@
-#include "RP2350/Common.h"
+#include "rp2350/Common.h"
 
 /*
 Image definition: section 5.9, "Metadata Block Details".

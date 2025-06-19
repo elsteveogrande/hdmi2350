@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RP2350/Common.h"
+#include "rp2350/Common.h"
 #include "runtime/Panic.h"
 
 extern "C" {
@@ -19,30 +19,24 @@ https://developer.arm.com/documentation/100235/0100/The-Cortex-M33-Processor/Exc
 
 // clang-format off
 struct [[gnu::aligned(256)]] Handlers {
-  typedef void __attribute__((interrupt)) (*Handler)();
-  Handler handlers[64];
+  typedef void (*Handler)();
+  static Handler handlers[64];
 
-  [[noreturn]] static void               reset();
-  static void __attribute__((interrupt)) nmi();
-  static void __attribute__((interrupt)) hardFault();
-  static void __attribute__((interrupt)) memManage();
-  static void __attribute__((interrupt)) busFault();
-  static void __attribute__((interrupt)) usageFault();
-  static void __attribute__((interrupt)) svCall();
-  static void __attribute__((interrupt)) dbgMon();
-  static void __attribute__((interrupt)) pendSV();
-  static void __attribute__((interrupt)) sysTick();
+  [[gnu::noinline]] [[noreturn]] static void reset();
 
-  [[gnu::noinline]] static void unknown(u8 intNumber);
-  template <u8 I> [[gnu::nodebug]]
-  static void __attribute__((interrupt)) unknown() {
-    [[clang::noinline]] unknown(I);
-  }
+  [[gnu::noinline]] static void irqn(u8 intNumber);
+  [[gnu::noinline]] static void unknown(u32 intNumber);
 
-  [[gnu::noinline]] static void irq(u8 intNumber);
-  template <u8 I> [[gnu::nodebug]]
-  static void __attribute__((interrupt)) irq() {
-    [[clang::noinline]] irq(I);
-  }
+  [[gnu::noinline]] __attribute__((interrupt)) static void nmi();
+  [[gnu::noinline]] __attribute__((interrupt)) static void hardFault();
+  [[gnu::noinline]] __attribute__((interrupt)) static void memManage();
+  [[gnu::noinline]] __attribute__((interrupt)) static void busFault();
+  [[gnu::noinline]] __attribute__((interrupt)) static void usageFault();
+  [[gnu::noinline]] __attribute__((interrupt)) static void svCall();
+  [[gnu::noinline]] __attribute__((interrupt)) static void dbgMon();
+  [[gnu::noinline]] __attribute__((interrupt)) static void pendSV();
+  [[gnu::noinline]] __attribute__((interrupt)) static void sysTick();
+  [[gnu::noinline]] __attribute__((interrupt)) static void irq();
+  [[gnu::noinline]] __attribute__((interrupt)) static void unknown();
 };
 // clang-format on

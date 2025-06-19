@@ -19,6 +19,9 @@ __fb_base   = ORIGIN(FRAMEBUFFER);
 __tx_line0  = ORIGIN(LINE0);
 __tx_line1  = ORIGIN(LINE1);
 
+__bss_base  = ORIGIN(BSS);
+__bss_size  = SIZEOF(BSS);
+
 /* Not actually used but this will silence warnings */
 ENTRY(0x10000000)
 

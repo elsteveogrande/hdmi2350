@@ -1,5 +1,5 @@
 #include "runtime/Panic.h"
-#include "RP2350/Common.h"
+#include "rp2350/Common.h"
 #include "runtime/String.h"
 
 extern "C" {

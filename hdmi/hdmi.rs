@@ -25,8 +25,11 @@ pub struct FrameBuffer {
 
 impl FrameBuffer {
   pub fn rect(self: &mut FrameBuffer, x: usize, y: usize, w: usize, h: usize, color: Color) -> () {
-    self.pixels[y][x] = color;
-    self.pixels[y + h-1][x + w-1] = color;
+    for j in y .. (y + h) {
+      for i in x .. (x + w) {
+        self.pixels[j][i] = color;
+      }
+    }
   }
 
   pub fn colorbars(self: &mut FrameBuffer) -> () {

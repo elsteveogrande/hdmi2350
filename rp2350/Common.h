@@ -42,7 +42,7 @@ template <typename W, typename T> struct Word {
   T& val() const { return *(addr()); }
 
   __attribute__((always_inline)) u32 get(u8 hi, u8 lo) const {
-    return (_u32_mask(hi, lo) & *this->val()) >> lo;
+    return (_u32_mask(hi, lo) & this->val()) >> lo;
   }
 
   __attribute__((always_inline)) auto& set(u32 z) const {
@@ -102,8 +102,8 @@ struct Reg32Structs {
   // clang-format off
   // Boilerplate for R, U classes
   struct U;
-  struct R : Reg<R, U> { explicit constexpr R(auto addr) : Reg(addr) {} };
-  struct U : Update<U, R> { explicit U(auto* reg) : Update(reg) {} };
+  struct R : Reg<R, U> { R(auto addr) : Reg(addr) {} };
+  struct U : Update<U, R> { U(auto* reg) : Update(reg) {} };
   // clang-format on
 };
 using Reg32 = Reg32Structs::R;
@@ -113,7 +113,21 @@ struct ArmInsns {
   static void nop() { asm volatile("nop"); }
   static void wfi() { asm volatile("wfi"); }
   static void wfe() { asm volatile("wfe"); }
+
+  static void cpsid() { asm volatile("cpsid i"); }
+  static void cpsie() { asm volatile("cpsie i"); }
+
+  /** Bits 0..8: Interrupt number; IRQ numbers start at 16 (IRQ0 is interrupt 16, etc.) */
+  static u32 ipsr() {
+    u32 ret;
+    asm volatile("mrs %0, ipsr" : "=r"(ret));
+    return ret;
+  }
 };
+
+inline void __disable_irq() { ArmInsns::cpsie(); }
+inline void __enable_irq() { ArmInsns::cpsie(); }
+
 #endif
 
 /**

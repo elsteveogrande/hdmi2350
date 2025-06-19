@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RP2350/Common.h"
+#include "rp2350/Common.h"
 
 extern "C" {
 

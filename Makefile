@@ -1,6 +1,7 @@
 LLS := \
 	build/RP2350/Common.cc.ll     \
 	build/RP2350/ImageDef.cc.ll   \
+	build/RP2350/ResetHandler.cc.ll   \
 	build/RP2350/VecTable.cc.ll   \
 	build/runtime/Panic.cc.ll     \
 	build/runtime/String.cc.ll    \

@@ -1,14 +1,7 @@
-#include "RP2350/VecTable.h"
+#include "rp2350/VecTable.h"
+#include "rp2350/Common.h"
+#include "rp2350/ResetHandler.h"
 #include "runtime/Panic.h"
-
-extern "C" {
-[[noreturn]] void start();
-}
-
-[[noreturn]] void Handlers::reset() {
-  start();
-  __builtin_unreachable();
-}
 
 void __attribute__((interrupt)) Handlers::nmi() {}
 void __attribute__((interrupt)) Handlers::sysTick() {}
@@ -23,40 +16,58 @@ void __attribute__((interrupt)) Handlers::hardFault() { __panic("hardFault", "",
 void __attribute__((interrupt)) Handlers::busFault() { __panic("busFault", "", "", 0, 0, 0); }
 void __attribute__((interrupt)) Handlers::usageFault() { __panic("usageFault", "", "", 0, 0, 0); }
 
-unsigned volatile FOO;
+[[gnu::noinline]] void Handlers::unknown(u32 i) {
+  // TODO: panic and report interrupt number
+  (void)i;
+  ArmInsns::nop();
+}
 
-[[gnu::noinline]] void Handlers::unknown(u8 i) { FOO = i; }
+[[gnu::noinline]] void Handlers::irqn(u8 i) {
+  auto* handler = handlers[i];
+  if (handler) { handler(); }
+}
 
-[[gnu::noinline]] void Handlers::irq(u8 i) { FOO = i; }
+[[gnu::noinline]] void Handlers::unknown() { unknown(ArmInsns::ipsr() & 0x1ff); }
+
+[[gnu::noinline]] void Handlers::irq() {
+  auto intn = ArmInsns::ipsr() & 0x1ff;
+  if (intn >= 16 && intn < 64) {
+    irqn(u8(intn - 16));
+  } else {
+    unknown(intn);
+  }
+}
 
 using H = Handlers;
 
 constexpr u32 kStackTop = 0x20000400;
 
+H::Handler Handlers::handlers[64] = {nullptr};
+
 // clang-format off
 [[gnu::section(".vec_table")]] [[gnu::used]] [[gnu::retain]]
-constexpr struct {
+struct {
+  // U32 #0
   u32 initialSP {kStackTop};
+  // U32 #1
   void (*initialPC)() {H::reset};
+
+  // U32 #2 through #15
   H::Handler intHandlers[14] {
-      /* (sp) */      /* (pc) */      H::nmi,         H::hardFault,
-      H::memManage,   H::busFault,    H::usageFault,  H::unknown<7>,
-      H::unknown<8>,  H::unknown<9>,  H::unknown<10>, H::svCall,
-      H::dbgMon,      H::unknown<13>, H::pendSV,      H::sysTick,
+      /* 0 (initial sp) */  /* 1: (reset) */   /*2*/ H::nmi,   /*3*/ H::hardFault,
+      /*3*/ H::memManage,   /*3*/ H::busFault,    /*3*/ H::usageFault,  /*3*/ H::unknown,
+      /*3*/ H::unknown,     /*3*/ H::unknown,     /*3*/ H::unknown,     /*3*/ H::svCall,
+      /*3*/ H::dbgMon,      /*3*/ H::unknown,     /*3*/ H::pendSV,      /*3*/ H::sysTick,
   };
+
+  // U32 #16 through #63
   H::Handler irqHandlers[48] {
-      H::irq<0>,      H::irq<1>,      H::irq<2>,      H::irq<3>,
-      H::irq<4>,      H::irq<5>,      H::irq<6>,      H::irq<7>,
-      H::irq<8>,      H::irq<9>,      H::irq<10>,     H::irq<11>,
-      H::irq<12>,     H::irq<13>,     H::irq<14>,     H::irq<15>,
-      H::irq<16>,     H::irq<17>,     H::irq<18>,     H::irq<19>,
-      H::irq<20>,     H::irq<21>,     H::irq<22>,     H::irq<23>,
-      H::irq<24>,     H::irq<25>,     H::irq<26>,     H::irq<27>,
-      H::irq<28>,     H::irq<29>,     H::irq<30>,     H::irq<31>,
-      H::irq<32>,     H::irq<33>,     H::irq<34>,     H::irq<35>,
-      H::irq<36>,     H::irq<37>,     H::irq<38>,     H::irq<39>,
-      H::irq<40>,     H::irq<41>,     H::irq<42>,     H::irq<43>,
-      H::irq<44>,     H::irq<45>,     H::irq<46>,     H::irq<47>,
+    H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq,
+    H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq,
+    H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq,
+    H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq, H::irq,
   };
 } vecTable;
+static_assert(sizeof(vecTable) == 256);
+
 // clang-format on

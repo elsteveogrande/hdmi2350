@@ -21,6 +21,7 @@ build/hdmi2350.elf: build/hdmi2350.s rp2350/exceptions.s etc/layout.ld etc/link_
 		@etc/compile_flags.txt \
 		-L build \
 		-Wl,-strip-all \
+		-g \
 		-o $@ \
 		-xassembler \
 		rp2350/exceptions.s \
@@ -30,7 +31,8 @@ build/hdmi2350.s: build/hdmi2350.opt.ll
 	llc -mcpu=cortex-m33 -o $@ $<
 
 build/hdmi2350.opt.ll: build/hdmi2350.ll etc/opt_flags.txt
-	opt @etc/opt_flags.txt -S -o $@ $<
+	# opt @etc/opt_flags.txt -S -o $@ $<
+	cp build/hdmi2350.ll build/hdmi2350.opt.ll
 
 build/hdmi2350.ll: $(LLS)
 	llvm-link -S -v -o $@ $(LLS)

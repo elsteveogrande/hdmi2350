@@ -109,15 +109,11 @@ void timer0Callback() {
 
 extern "C" {
 
-void __floobie();
-
 [[gnu::used]] [[gnu::retain]] [[noreturn]] void start() {
 
   Resets resets;
   HSTX   hstx;
   SIO    sio;
-
-  __floobie();
 
   // Init HSTX:
 

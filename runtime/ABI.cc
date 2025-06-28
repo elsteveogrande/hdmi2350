@@ -1,6 +1,4 @@
-#pragma once
-
-#include "rp2350/Common.h"
+#include "runtime/ABI.h"
 
 extern "C" {
 

@@ -1,6 +1,0 @@
--Os
---frame-pointer=all
---function-sections
---data-sections
---inline-threshold=4
---tailcallopt

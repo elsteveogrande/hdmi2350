@@ -13,7 +13,7 @@ struct PanicTX {
 
   void bit(bool v) {
     SIO sio;
-    sio.gpioOut().bit(kPicoLED, v).bit(kPanicUARTTX, v);
+    sio.gpioOut().bit(kPanicUARTTX, v);
     baudDelay();
   }
 

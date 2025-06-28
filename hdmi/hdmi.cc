@@ -115,7 +115,10 @@ extern "C" {
   HSTX   hstx;
   SIO    sio;
 
-  // Init HSTX:
+  // Init HSTX
+  resets.reset.resetHSTX(true);
+  resets.reset.resetHSTX(false);
+  while (!resets.resetDone.resetDoneHSTX()) { _BUSY_LOOP(); }
 
   // Assume system clock (SYSPLL) is 150 MHz, the default for Pico2.
   // We want to transmit at a 30 MHz pixel clock, with each TMDS bit-time
@@ -157,8 +160,6 @@ extern "C" {
   // in order to send two bits at a time, 5 times.
 
   while (true) {
-    resets.reset.resetHSTX(false);
-
     hstx.bit(7).clock(true);
     sio.gpioOut().bit(kPicoLED, 1);
 
@@ -171,8 +172,7 @@ extern "C" {
     hstx.bit(2).selectP(19).selectN(18).invert(true);
     hstx.bit(0).selectP(9).selectN(8).invert(true);
 
-    sio.gpioOut().set(7, 0, hstx.fifoStatus.get(15, 8));
-    if (!hstx.fifoStatus.full()) { hstx.fifo.set(0xffffffff); }
+    if (!hstx.fifoStatus.full()) { hstx.fifo.set(0x55555555); }
     _BUSY_LOOP();
   }
 }

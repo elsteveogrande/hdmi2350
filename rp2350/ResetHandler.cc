@@ -3,6 +3,7 @@
 #include "rp2350/Resets.h"
 #include "rp2350/SIO.h"
 #include "rp2350/Ticks.h"
+#include "rp2350/Timers.h"
 #include "rp2350/VecTable.h"
 
 namespace init {
@@ -35,14 +36,14 @@ void initXOSC() {
   XOSC x;
   x.startup.set(20, 20, 0).set(13, 0, 1000);      // delay = 256 * 1000 / 12M = appx 21 ms
   x.control.set(23, 12, 0xfab).set(11, 0, 0xaa0); // 0xfab means enable; 0xaa0 means 1-15 MHz
+  x.dormant.set(31, 0, 0x77616b65);               // "wake"
   while (!x.status.bit(31)) { _BUSY_LOOP(); }
-  x.dormant.set(31, 0, 0x77616b65); // "wake"
 }
 
 void initSysPLL() {
   SYS_PLL pll;
   Resets  resets;
-  resets.reset.resetPLLSYS(0);
+  resets.reset.resetPLLSYS(false);
 }
 
 void initTicks() {
@@ -120,16 +121,16 @@ void initClockSys() {
   SIO sio;
   initGPIOOut(kPicoLED);
   initGPIOOut(kPanicUARTTX);
-  sio.gpioOut().bit(kPanicUARTTX, 1);
+  sio.gpioOut().bit(kPanicUARTTX, true);
+  sio.gpioOut().bit(kPicoLED, true);
 
-  // sio.gpioOut().bit(kPicoLED, true);
-
-  // Resets {}.reset.resetIOBANK0(false).resetPADSBANK0(false);
+  Resets {}.reset.resetIOBANK0(false).resetPADSBANK0(false);
   // init::initXOSC();
   // init::initSysPLL();
   // init::initTicks();
   // init::initClockRef();
   // init::initClockSys();
+  // Reg32 {0xaaaaaaaa}.bit(0, 0);
 
   // Resets resets;
   // resets.reset.resetTIMER0(false);

@@ -4,8 +4,5 @@ arm-none-eabi
 -Wl,-T,etc/layout.ld
 -fuse-ld=lld
 -nostdlib
--g3
--flto
--Wl,--gc-sections
--Wl,-strip-all
+-g
 -ffreestanding

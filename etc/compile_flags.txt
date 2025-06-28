@@ -13,6 +13,7 @@ thumbv8m.main-none-eabi
 -Wno-unused
 -Wno-frame-address
 -Wno-arm-interrupt-vfp-clobber
+-Wglobal-constructors
 -fno-exceptions
 -frtti
 -nostdinc

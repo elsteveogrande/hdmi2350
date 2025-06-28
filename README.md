@@ -260,11 +260,6 @@ https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
 ## ARM
 https://developer.arm.com/documentation/100235/0100/The-Cortex-M33-Processor/Exception-model/Vector-table
 
-## Rust, including on ARMs or embedded
-https://thejpster.org.uk/blog/blog-2024-08-08/
-https://os.phil-opp.com/minimal-rust-kernel/
-https://doc.rust-lang.org/nomicon/vec/vec-layout.html
-
 ## HDMI video mode
 https://www.reddit.com/r/raspberrypipico/comments/1fj0vxg/can_you_get_169_video_with_hstx/
 https://tomverbeure.github.io/video_timings_calculator

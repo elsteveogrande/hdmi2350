@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rp2350/Common.h"
-#include "runtime/Panic.h"
 
 extern "C" {
 // Addresses for these are defined in the linker script
@@ -22,16 +21,13 @@ struct [[gnu::aligned(256)]] Handlers {
   typedef void (*Handler)();
   static Handler handlers[64];
 
+  /** Defined in `ResetHandler.cc` */
   [[gnu::noinline]] [[noreturn]] static void reset();
 
   [[gnu::noinline]] static void irqn(u8 intNumber);
   [[gnu::noinline]] static void unknown(u32 intNumber);
 
   [[gnu::noinline]] __attribute__((interrupt)) static void nmi();
-  [[gnu::noinline]] __attribute__((interrupt)) static void hardFault();
-  [[gnu::noinline]] __attribute__((interrupt)) static void memManage();
-  [[gnu::noinline]] __attribute__((interrupt)) static void busFault();
-  [[gnu::noinline]] __attribute__((interrupt)) static void usageFault();
   [[gnu::noinline]] __attribute__((interrupt)) static void svCall();
   [[gnu::noinline]] __attribute__((interrupt)) static void dbgMon();
   [[gnu::noinline]] __attribute__((interrupt)) static void pendSV();

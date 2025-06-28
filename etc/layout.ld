@@ -2,8 +2,9 @@ MEMORY {
   FLASH(rx) : ORIGIN = 0x10000000, LENGTH = 2048k
   
   /* split SRAM into separate regions: */
-  STACK(rw)       : ORIGIN = 0x20000100, LENGTH = 1024 /* sp = 0x20000400 */
-  BSS(rw)         : ORIGIN = 0x20000400, LENGTH = 63k
+  STACK(rw)       : ORIGIN = 0x20000100, LENGTH = 3072 /* sp = 0x20000c00 */
+  PANICSTACK(rw)  : ORIGIN = 0x20000c00, LENGTH = 1024 /* sp = 0x20001000 when panicking */
+  BSS(rw)         : ORIGIN = 0x20001000, LENGTH = 60k
   FRAMEBUFFER(rw) : ORIGIN = 0x20010000, LENGTH = 448k
 
   /*
@@ -14,7 +15,8 @@ MEMORY {
   LINE1(rw)       : ORIGIN = 0x20081000, LENGTH = 4k
 }
 
-__stack_top = ORIGIN(STACK) + SIZEOF(STACK);
+__reset_sp  = ORIGIN(STACK) + SIZEOF(STACK);
+__panic_sp  = ORIGIN(PANICSTACK) + SIZEOF(PANICSTACK);
 __fb_base   = ORIGIN(FRAMEBUFFER);
 __tx_line0  = ORIGIN(LINE0);
 __tx_line1  = ORIGIN(LINE1);

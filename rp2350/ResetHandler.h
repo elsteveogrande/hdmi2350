@@ -1,9 +1,9 @@
 #pragma once
 
-#include "runtime/Panic.h"
+#include "rp2350/Common.h"
 
-extern u8* __bss_base;
-extern u32 __bss_size;
+constexpr static u32 __bss_base = 0x20000400;
+constexpr static u32 __bss_size = 63 << 10;
 
 extern "C" {
 [[gnu::used]] [[gnu::retain]] [[noreturn]] void start();

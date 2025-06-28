@@ -4,22 +4,26 @@
 
 namespace cxx {
 
-/**
-In rust code this is mirrored as struct `String` in module `cxx`
-*/
+inline u32 strlen(char const* s) {
+  u32 ret = 0;
+  while (*s++) {}
+  return ret;
+}
+
 struct String {
   usize       size_ {0};
   char const* data_ {""};
 
   constexpr String() = default;
 
-  constexpr String(char const* data) {
-    if consteval {
-      data_ = data;
-      size_ = 0;
-      return;
-    }
+  constexpr String(char const* data, u32 size) {
+    data_ = data;
+    size_ = size;
   }
+
+  constexpr String(char const* data) : String(data, strlen(data)) {}
+
+  operator char const*() const { return data_; }
 };
 
 } // namespace cxx

@@ -1,8 +1,10 @@
 #include "rp2350/Common.h"
+#include "rp2350/GPIO.h"
+#include "rp2350/HSTX.h"
 #include "rp2350/M33.h"
 #include "rp2350/Resets.h"
 #include "rp2350/SIO.h"
-#include "rp2350/VecTable.h"
+#include "runtime/Panic.h"
 
 // extern "C" {
 // // Defined in `fb.rs`:
@@ -48,92 +50,6 @@
 //   TXPair pairs[4];
 // };
 
-// namespace {
-// __attribute__((noinline)) void usec(unsigned us) {
-//   for (unsigned j = 0; j < us; j++) {
-//     for (unsigned i = 0; i < 3; i++) {
-//       asm volatile("");
-//       ArmInsns::nop();
-//       asm volatile("");
-//     }
-//   }
-// }
-// __attribute__((noinline)) void msec(unsigned ms) {
-//   for (unsigned j = 0; j < ms; j++) {
-//     asm volatile("");
-//     usec(1000);
-//     asm volatile("");
-//   }
-// }
-
-// struct SPIBanger {
-//   SIO sio;
-
-//   constexpr static unsigned kSDI    = 16; //
-//   constexpr static unsigned kSDO    = 19; //
-//   constexpr static unsigned kSCLK   = 18; // strobes high
-//   constexpr static unsigned knCS    = 17; // low to select
-//   constexpr static unsigned kLight  = 20; // high to turn on
-//   constexpr static unsigned kDC     = 21; // low indicates command
-//   constexpr static unsigned knReset = 22; // active low
-
-//   void bit(bool b) {
-//     sio.gpioOut.bit(kSDO, b);
-//     sio.gpioOut.bit(kSCLK, 1);
-//     sio.gpioOut.bit(kSCLK, 0);
-//   }
-
-//   void tx(u8 v) {
-//     bit(!!(v & 0x80));
-//     bit(!!(v & 0x40));
-//     bit(!!(v & 0x20));
-//     bit(!!(v & 0x10));
-//     bit(!!(v & 0x08));
-//     bit(!!(v & 0x04));
-//     bit(!!(v & 0x02));
-//     bit(!!(v & 0x01));
-//   }
-
-//   void cmd(u8 v) {
-//     sio.gpioOut.bit(kDC, 0);
-//     tx(v);
-//   }
-
-//   void data(u8 v) {
-//     sio.gpioOut.bit(kDC, 1);
-//     tx(v);
-//   }
-
-//   explicit SPIBanger(SIO _sio) : sio(_sio) {
-//     initGPIOOut(knReset);
-//     initGPIOOut(kDC);
-//     initGPIOOut(kLight);
-//     initGPIOOut(knCS);
-//     initGPIOOut(kSCLK);
-//     initGPIOOut(kSDO);
-//     initGPIOIn(kSDI);
-//     sio.gpioOut.bit(kSCLK, 0);
-//     sio.gpioOut.bit(knCS, 0);
-//     sio.gpioOut.bit(kLight, 1);
-//     msec(300);
-//   }
-// };
-
-// void spiStuff() {
-//   SIO       sio;
-//   SPIBanger spi {sio};
-
-//   while (true) {
-//     // sio.gpioOut.bit(SPIBanger::knCS, 0);
-//     spi.cmd(0x53);
-//     spi.data(0x00);
-//     // sio.gpioOut.bit(SPIBanger::knCS, 1);
-//     sio.gpioOutXor.bit(kPicoLED, 1);
-//   }
-// }
-
-// } // namespace
-
 // /*
 // HDMI implementation.
 // Specs for DVI (which also apply to HDMI)
@@ -167,211 +83,101 @@
 //   }};
 
 //   [[gnu::used]] [[gnu::retain]] [[noreturn]] void run() {
-//     SIO sio;
-
-//     // Set up HSTX pins
-//     for (u8 i = 12; i < 20; i++) { initHSTX(i); }
-
-//     // TODO: p1203 HSTX pin configs
-
-//     // Set up HSTX IRQ
-
-//     // Set up HSTX DMA
-
-//     // Set up framebuffer: init with simply a colorbar pattern
-//     colorbars();
-
-//     // Set up line buffers
-
-//     // Start DMA out on line 0
-
-//     // SPIBanger spi {sio};
-
-//     while (true) {
-//       sio.gpioOut.bit(kPicoLED, 1);
-//       msec(100);
-//       sio.gpioOut.bit(kPicoLED, 0);
-//       msec(900);
-//     }
-
-//     // DMA takes over from here and all the HDMI activity is IRQ-driven.
-//     // Nothing else for `run` to do; just blink the LED to show that we're up and running.
-//     // unsigned line = 0;
-//     // while (true) {
-//     //   sio.gpioOut.bit(kPicoLED, !((line >> 15) & 1));
-//     //   ++line;
-//     //   _BUSY_LOOP();
-//     // }
 //   }
 
 //   u32 frame_ {};
 //   u16 line_ {};
 // };
 
-// struct USB {
-//   void init() {
-//     Resets resets;
-//     resets.reset.resetUSBCTRL(false);
-//     while (!resets.resetDone.resetDoneUSBCTRL()) {}
-//   }
-// };
-
-/** Section 8.5 */
-struct Ticks {
-  struct ControlStructs {
-    struct Fields {
-      bool  running(this const auto& self) { return self.bit(1); }
-      bool  enable(this const auto& self) { return self.bit(0); }
-      auto& enable(this const auto& self, bool v) { return self.bit(0, v); }
-    };
-    // clang-format off
-    // Boilerplate for R, U classes
-    struct U;
-    struct R : Fields, Reg<R, U> { R(auto addr) : Reg(addr) {} };
-    struct U : Fields, Update<U, R> { U(auto* reg) : Update(reg) {} };
-    // clang-format on
-  };
-
-  struct CyclesStructs {
-    struct Fields {
-      u8    count(this const auto& self) { return self.get(8, 0); }
-      auto& count(this const auto& self, u8 v) { return self.set(8, 0, v); }
-    };
-    // clang-format off
-    // Boilerplate for R, U classes
-    struct U;
-    struct R : Fields, Reg<R, U> { R(auto addr) : Reg(addr) {} };
-    struct U : Fields, Update<U, R> { U(auto* reg) : Update(reg) {} };
-    // clang-format on
-  };
-
-  struct CountStructs {
-    struct Fields {
-      u8 countdown(this const auto& self) { return self.get(8, 0); }
-    };
-    // clang-format off
-    // Boilerplate for R, U classes
-    struct U;
-    struct R : Fields, Reg<R, U> { R(auto addr) : Reg(addr) {} };
-    struct U : Fields, Update<U, R> { U(auto* reg) : Update(reg) {} };
-    // clang-format on
-  };
-
-  using Control = ControlStructs::R;
-  using Cycles  = CyclesStructs::R;
-  using Count   = CountStructs::R;
-
-  constexpr static u32 kBase = 0x40108000;
-
-  Control proc0Control() { return {kBase + 0x00}; }
-  Cycles  proc0Cycles() { return {kBase + 0x04}; }
-  Count   proc0Count() { return {kBase + 0x08}; }
-  Control proc1Control() { return {kBase + 0x0c}; }
-  Cycles  proc1Cycles() { return {kBase + 0x10}; }
-  Count   proc1Count() { return {kBase + 0x14}; }
-  Control timer0Control() { return {kBase + 0x18}; }
-  Cycles  timer0Cycles() { return {kBase + 0x1c}; }
-  Count   timer0Count() { return {kBase + 0x20}; }
-  Control timer1Control() { return {kBase + 0x24}; }
-  Cycles  timer1Cycles() { return {kBase + 0x28}; }
-  Count   timer1Count() { return {kBase + 0x2c}; }
-  Control watchdogControl() { return {kBase + 0x30}; }
-  Cycles  watchdogCycles() { return {kBase + 0x34}; }
-  Count   watchdogCount() { return {kBase + 0x38}; }
-  Control riscvControl() { return {kBase + 0x3c}; }
-  Cycles  riscvCycles() { return {kBase + 0x40}; }
-  Count   riscvCount() { return {kBase + 0x44}; }
-};
-
-struct Timer {
-  u32   base_;
-  Reg32 timeLR() { return {base_ + 0x0c}; }
-  Reg32 alarm0() { return {base_ + 0x10}; }
-  Reg32 intEnable() { return {base_ + 0x40}; }
-};
-
-struct Timers {
-  constexpr static u32 kTimer0Base {0x400b0000};
-  constexpr static u32 kTimer1Base {0x400b8000};
-
-  Timer timer0() { return {Timers::kTimer0Base}; }
-  Timer timer1() { return {Timers::kTimer1Base}; }
-};
-
 u32 millis;
 
 void timer0Callback() {
+  // ++millis;
 
-  ++millis;
+  // M33    m33;
+  // Timers timers;
+  // auto   t = timers.timer0();
 
-  M33    m33;
-  Timers timers;
-  auto   t = timers.timer0();
+  // // Reschedule alarm
+  // t.alarm0().set(1000 + t.timeLR().val());
 
-  // Reschedule alarm
-  t.alarm0().set(1000 + t.timeLR().val());
-
-  // Reenable firing of alarm
-  // p83: Interrupt 0 is TIMER_IRQ_0 by convention
-  m33.nvicICPR0.bit(0, true); // Clear IRQ flag
-  m33.nvicISER0.bit(0, true); // [Re]enable IRQ
+  // // Reenable firing of alarm
+  // // p83: Interrupt 0 is TIMER_IRQ_0 by convention
+  // m33.nvicICPR0.bit(0, true); // Clear IRQ flag
+  // m33.nvicISER0.bit(0, true); // [Re]enable IRQ
 }
 
-struct Global {
-  static void initTicks() {
-    // p569: SDK expects nominal 1uS system ticks, as does Arm internals.
-    // Although we don't use the SDK we'll assume 1uS everywhere as well.
-    Ticks  ticks;
-    Resets resets;
-
-    resets.reset.resetTIMER0(false);
-    while (!resets.resetDone.resetDoneTIMER0()) { _BUSY_LOOP(); }
-
-    ticks.proc0Control().enable(0); // disable for config
-    ticks.proc0Cycles().count(12);  // 12 clocks @ 12 MHz xtal -> 1 µs
-    ticks.proc0Control().enable(1);
-    while (!ticks.proc0Control().running()) { _BUSY_LOOP(); }
-
-    ticks.timer0Control().enable(0); // disable for config
-    ticks.timer0Cycles().count(12);  // 12 clocks @ 12 MHz xtal -> 1 µs
-    ticks.timer0Control().enable(1);
-    while (!ticks.timer0Control().running()) { _BUSY_LOOP(); }
-  }
-
-  static void initMSecTimer() {
-    millis = 0;
-
-    Handlers::handlers[0] = timer0Callback;
-    timer0Callback(); // schedules alarm and (re-)enables
-    Timers().timer0().intEnable().bit(0, true);
-  }
-
-  static void init() {
-    initGPIOOut(kPicoLED);
-    // Resets {}.reset.resetIOBANK0(false).resetPADSBANK0(false);
-    // initTicks();
-    // initMSecTimer();
-    // __enable_irq();
-  }
-};
-
 extern "C" {
-[[gnu::used]] [[gnu::retain]] [[noreturn]] void start() {
-  Global::init();
 
-  SIO  sio;
-  bool led {true};
+void __floobie();
+
+[[gnu::used]] [[gnu::retain]] [[noreturn]] void start() {
+
+  Resets resets;
+  HSTX   hstx;
+  SIO    sio;
+
+  __floobie();
+
+  // Init HSTX:
+
+  // Assume system clock (SYSPLL) is 150 MHz, the default for Pico2.
+  // We want to transmit at a 30 MHz pixel clock, with each TMDS bit-time
+  // 1/10th of that clock (i.e. 300 MHz).
+
+  // Control reg
+  hstx.csr
+      .clkDiv(5)       // output clock is 5 DDR periods
+      .rotates(5)      // two bits (DDR) per bit-clock, so we'll rotate 5 times
+      .rotBits(32 - 2) // left-shift two bits per complete (pos AND neg edges) input clock
+      .enabled(true);
+
+  // Set GPIOs 12..19 to HSTX instead of GPIO
+  for (u8 i = 12; i < 20; i++) { initHSTX(i); }
+  for (u8 i = 0; i < 8; i++) { initGPIOOut(i); }
+
+  // Maps TMDS pairs to HSTX bits and GPIO pairs:
+  //  +CLK-   +CH2-   +CH1-   +CH0-
+  //   7   6   5   4   3   2   1   0  HSTX bit
+  //  19  18  17  16  15  14  13  12  GPIO number
+  //
+  // Control signals are 30 bits and sent out like so, on each
+  // transition of the HSTX clock (DDR, to rising/falling edges):
+  //  xx987654321098765432109876543210  Input data, 32 bits (x=ignored)
+  //    ^^        ^^        ^^          P/N DDR cycles
+  // That is, each channel's bits 9 and 8 are sent per bit-clock.
+  // This word is also left-rotated by two, a total of 5 times.
+  // This results in the selection of these bits (in brackets):
+  //  xx[98]76543210[98]76543210[98]76543210
+  //  98[76]54321098[76]54321098[76]543210xx
+  //  76[54]32109876[54]32109876[54]3210xx98
+  //  54[32]10987654[32]10987654[32]10xx9876
+  //  32[10]98765432[10]98765432[10]xx987654
+  //    ^ CH2       ^ CH1       ^ CH0
+  //
+  // We configure the output pins to select particular bits from the data word.
+  // But we can't configure 5 different sets of bits to select each time, but
+  // instead, specify one selection of bits, and rotate the whole data word,
+  // in order to send two bits at a time, 5 times.
+
   while (true) {
-    sio.gpioOut().bit(kPicoLED, led);
-    // led = !led;
-    // sio.gpioOut().bit(kPicoLED, (millis >> 5) & 0x01);
+    resets.reset.resetHSTX(false);
+
+    hstx.bit(7).clock(true);
+    sio.gpioOut().bit(kPicoLED, 1);
+
+    hstx.bit(5).selectP(29).selectN(28);
+    hstx.bit(3).selectP(19).selectN(18);
+    hstx.bit(1).selectP(9).selectN(8);
+
+    hstx.bit(6).clock(true).invert(true);
+    hstx.bit(4).selectP(29).selectN(28).invert(true);
+    hstx.bit(2).selectP(19).selectN(18).invert(true);
+    hstx.bit(0).selectP(9).selectN(8).invert(true);
+
+    sio.gpioOut().set(7, 0, hstx.fifoStatus.get(15, 8));
+    if (!hstx.fifoStatus.full()) { hstx.fifo.set(0xffffffff); }
     _BUSY_LOOP();
   }
-
-  // USB usb;
-  // usb.init();
-
-  // HDMI hdmi;
-  // hdmi.run();
 }
 }

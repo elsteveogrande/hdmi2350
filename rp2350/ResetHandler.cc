@@ -2,12 +2,14 @@
 #include "rp2350/Common.h"
 #include "rp2350/Resets.h"
 #include "rp2350/SIO.h"
+#include "rp2350/Ticks.h"
 #include "rp2350/VecTable.h"
 
 namespace init {
 
 void clearBSS() {
-  for (u32 i = 0; i < __bss_size; i++) { __bss_base[i] = 0; }
+  auto* bss = (u8*)__bss_base;
+  for (u32 i = 0; i < __bss_size; i++) { bss[i] = 0; }
 }
 
 struct XOSC {
@@ -43,6 +45,26 @@ void initSysPLL() {
   resets.reset.resetPLLSYS(0);
 }
 
+void initTicks() {
+  // p569: SDK expects nominal 1uS system ticks, as does Arm internals.
+  // Although we don't use the SDK we'll assume 1uS everywhere as well.
+  Ticks  ticks;
+  Resets resets;
+
+  resets.reset.resetTIMER0(false);
+  while (!resets.resetDone.resetDoneTIMER0()) { _BUSY_LOOP(); }
+
+  ticks.proc0Control().enable(0); // disable for config
+  ticks.proc0Cycles().count(12);  // 12 clocks @ 12 MHz xtal -> 1 µs
+  ticks.proc0Control().enable(1);
+  while (!ticks.proc0Control().running()) { _BUSY_LOOP(); }
+
+  ticks.timer0Control().enable(0); // disable for config
+  ticks.timer0Cycles().count(12);  // 12 clocks @ 12 MHz xtal -> 1 µs
+  ticks.timer0Control().enable(1);
+  while (!ticks.timer0Control().running()) { _BUSY_LOOP(); }
+}
+
 struct Clocks {
   constexpr static u32 kBase = 0x40010000;
 
@@ -71,14 +93,53 @@ void initClockSys() {
   while (c.sysSelected().get(3, 0) != 2) { ArmInsns::nop(); }
 }
 
+// struct Global {
+//   static void initMSecTimer() {
+//     millis = 0;
+
+//     Handlers::handlers[0] = timer0Callback;
+//     // timer0Callback(); // schedules alarm and (re-)enables
+//     // Timers().timer0().intEnable().bit(0, true);
+//   }
+
+//   static void init() {
+//     initGPIOOut(kPicoLED);
+//     initMSecTimer();
+//     __enable_irq();
+//   }
+// };
+
+// void sleepMS(u32 ms) {
+// }
+
 } // namespace init
 
 [[gnu::used]] [[gnu::retain]] [[noreturn]] void Handlers::reset() {
-  // init::clearBSS();
+  init::clearBSS();
+
+  SIO sio;
+  initGPIOOut(kPicoLED);
+  initGPIOOut(kPanicUARTTX);
+  sio.gpioOut().bit(kPanicUARTTX, 1);
+
+  // sio.gpioOut().bit(kPicoLED, true);
+
+  // Resets {}.reset.resetIOBANK0(false).resetPADSBANK0(false);
   // init::initXOSC();
   // init::initSysPLL();
+  // init::initTicks();
   // init::initClockRef();
   // init::initClockSys();
+
+  // Resets resets;
+  // resets.reset.resetTIMER0(false);
+  // while (!resets.resetDone.resetDoneTIMER0()) { _BUSY_LOOP(); }
+
+  // Ticks ticks;
+  // ticks.timer0Cycles().set(8, 0, 12);
+  // ticks.timer0Control().set(0, 0, true);
+
+  // auto t0 = Timers::timer0();
 
   start();
   __builtin_unreachable();

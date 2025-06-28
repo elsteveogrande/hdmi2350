@@ -1,20 +1,12 @@
 #include "rp2350/VecTable.h"
 #include "rp2350/Common.h"
-#include "rp2350/ResetHandler.h"
 #include "runtime/Panic.h"
 
 void __attribute__((interrupt)) Handlers::nmi() {}
 void __attribute__((interrupt)) Handlers::sysTick() {}
-
-void __attribute__((interrupt)) Handlers::memManage() {}
 void __attribute__((interrupt)) Handlers::svCall() {}
 void __attribute__((interrupt)) Handlers::pendSV() {}
-
 void __attribute__((interrupt)) Handlers::dbgMon() {}
-
-void __attribute__((interrupt)) Handlers::hardFault() { __panic("hardFault", "", "", 0, 0, 0); }
-void __attribute__((interrupt)) Handlers::busFault() { __panic("busFault", "", "", 0, 0, 0); }
-void __attribute__((interrupt)) Handlers::usageFault() { __panic("usageFault", "", "", 0, 0, 0); }
 
 [[gnu::noinline]] void Handlers::unknown(u32 i) {
   // TODO: panic and report interrupt number
@@ -40,7 +32,7 @@ void __attribute__((interrupt)) Handlers::usageFault() { __panic("usageFault", "
 
 using H = Handlers;
 
-constexpr u32 kStackTop = 0x20000400;
+constexpr u32 kStackTop = 0x20000c00;
 
 H::Handler Handlers::handlers[64] = {nullptr};
 
@@ -49,15 +41,16 @@ H::Handler Handlers::handlers[64] = {nullptr};
 struct {
   // U32 #0
   u32 initialSP {kStackTop};
+
   // U32 #1
   void (*initialPC)() {H::reset};
 
   // U32 #2 through #15
   H::Handler intHandlers[14] {
-      /* 0 (initial sp) */  /* 1: (reset) */   /*2*/ H::nmi,   /*3*/ H::hardFault,
-      /*3*/ H::memManage,   /*3*/ H::busFault,    /*3*/ H::usageFault,  /*3*/ H::unknown,
-      /*3*/ H::unknown,     /*3*/ H::unknown,     /*3*/ H::unknown,     /*3*/ H::svCall,
-      /*3*/ H::dbgMon,      /*3*/ H::unknown,     /*3*/ H::pendSV,      /*3*/ H::sysTick,
+      /* 0 (initial sp) */    /* 1: (reset) */        /*2*/ H::nmi,             /*3*/ cxx::__hardFault,
+      /*4*/ cxx::__memManage, /*5*/ cxx::__busFault,  /*6*/ cxx::__usageFault,  /*7*/ H::unknown,
+      /*8*/ H::unknown,       /*9*/ H::unknown,       /*10*/ H::unknown,        /*11*/ H::svCall,
+      /*12*/ H::dbgMon,       /*13*/ H::unknown,      /*14*/ H::pendSV,         /*15*/ H::sysTick,
   };
 
   // U32 #16 through #63

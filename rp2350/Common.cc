@@ -29,7 +29,6 @@ void initGPIOIn(u8 index, bool pullUp, bool schmitt) {
 
   Pads::UserBank bank;
   bank.gpio(index)
-      .update()
       .inputEnable(true)
       .pullDownEnable(!pullUp)
       .pullUpEnable(pullUp)
@@ -47,12 +46,10 @@ void initHSTX(u8 index) {
 
   Pads::UserBank bank;
   bank.gpio(index)
-      .update()
-      .drive(Pads::UserBank::Drive::k12mA)
+      .inputEnable(false)
       .outputDisable(false)
       .pullDownEnable(false)
       .pullUpEnable(false)
-      .bit(1, false)
       .schmitt(false)
       .slewfast(true)
       .isolation(0);

@@ -61,7 +61,7 @@ void __panic(PanicData const& pd) {
      << "  r4:" << pd.r4 << "  r5:" << pd.r5 << "  r6:" << pd.r6 << "  r7:" << pd.r7 << '\n'
      << "  r8:" << pd.r8 << "  r9:" << pd.r9 << " r10:" << pd.r10 << " r11:" << pd.r11 << '\n'
      << " r12:" << pd.r12 << "  sp:" << pd.sp << "  lr:" << pd.lr << "  pc:" << pd.pc << '\n'
-     << " exc:" << pd.exc << "  type:" << pd.type << '\n';
+     << " psr:" << pd.psr << " exc:" << pd.exc << "  type:" << pd.type << '\n';
 
   SIO sio;
   u32 i = 0;

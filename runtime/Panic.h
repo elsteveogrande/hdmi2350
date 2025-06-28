@@ -5,24 +5,25 @@
 namespace cxx {
 
 struct [[gnu::packed]] [[gnu::aligned(4)]] PanicData {
-  // All registers preserved as of the time the exception occurs,
-  // along with additional info
-
-  // Original stack pointer, at time of fault; calculated in fault handler
   u32 sp;
-
-  // Set by the (hard, memory, bus, usage) fault handler
-  u32 type;
-
-  // Pushed by the fault handler
-  u32 r4, r5, r6, r7, r8, r9, r10, r11;
-
-  // Exception info set by the CPU during faults
+  u32 r4;
+  u32 r5;
+  u32 r6;
+  u32 r7;
+  u32 r8;
+  u32 r9;
+  u32 r10;
+  u32 r11;
   u32 exc;
-
-  // CPU automatically pushed these onto the stack before entering fault handler; see:
-  // https://developer.arm.com/documentation/100235/0100/The-Cortex-M33-Processor/Exception-model/Exception-entry-and-return/Exception-entry-
-  u32 r0, r1, r2, r3, r12, lr, pc, psr;
+  u32 type;
+  u32 r0;
+  u32 r1;
+  u32 r2;
+  u32 r3;
+  u32 r12;
+  u32 lr;
+  u32 pc;
+  u32 psr;
 };
 
 [[noreturn]] __attribute__((interrupt())) void __hardFault();

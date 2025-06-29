@@ -18,7 +18,8 @@ thumbv8m.main-none-eabi
 -frtti
 -nostdinc
 -nostdlib
--g
+-gsplit-dwarf
+-Wl,--gdb-index
 -I.
 -fno-builtin
 -Os

@@ -126,6 +126,9 @@ void __panic(PanicData const& pd) {
   tx << NORMAL;
   tx << '\n';
 
+  Reg32 bork {u32(0x400d800c)};
+  if (bork.val()) { tx << RED << "BORK " << bork.val() << NORMAL << '\n'; }
+
   SIO sio;
   u32 i = 0;
   while (true) { sio.gpioOut().bit(kPicoLED, (i++ >> 18) & 1); };

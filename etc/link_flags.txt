@@ -4,5 +4,6 @@ arm-none-eabi
 -Wl,-T,etc/layout.ld
 -fuse-ld=lld
 -nostdlib
--g
+-gsplit-dwarf
+-Wl,--gdb-index
 -ffreestanding

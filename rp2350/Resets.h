@@ -193,4 +193,34 @@ struct Resets {
   Reset reset {kBase + 0};
   WDSel wdSel {kBase + 4};
   ResetDone resetDone {kBase + 8};
+
+  void cycleADC      () { reset.resetADC      (true); reset.resetADC      (false); while (!resetDone.resetDoneADC      ()) {_BUSY_LOOP();}  }
+  void cycleBUSCTRL  () { reset.resetBUSCTRL  (true); reset.resetBUSCTRL  (false); while (!resetDone.resetDoneBUSCTRL  ()) {_BUSY_LOOP();}  }
+  void cycleDMA      () { reset.resetDMA      (true); reset.resetDMA      (false); while (!resetDone.resetDoneDMA      ()) {_BUSY_LOOP();}  }
+  void cycleHSTX     () { reset.resetHSTX     (true); reset.resetHSTX     (false); while (!resetDone.resetDoneHSTX     ()) {_BUSY_LOOP();}  }
+  void cycleI2C0     () { reset.resetI2C0     (true); reset.resetI2C0     (false); while (!resetDone.resetDoneI2C0     ()) {_BUSY_LOOP();}  }
+  void cycleI2C1     () { reset.resetI2C1     (true); reset.resetI2C1     (false); while (!resetDone.resetDoneI2C1     ()) {_BUSY_LOOP();}  }
+  void cycleIOBANK0  () { reset.resetIOBANK0  (true); reset.resetIOBANK0  (false); while (!resetDone.resetDoneIOBANK0  ()) {_BUSY_LOOP();}  }
+  void cycleIOQSPI   () { reset.resetIOQSPI   (true); reset.resetIOQSPI   (false); while (!resetDone.resetDoneIOQSPI   ()) {_BUSY_LOOP();}  }
+  void cycleJTAG     () { reset.resetJTAG     (true); reset.resetJTAG     (false); while (!resetDone.resetDoneJTAG     ()) {_BUSY_LOOP();}  }
+  void cyclePADSBANK0() { reset.resetPADSBANK0(true); reset.resetPADSBANK0(false); while (!resetDone.resetDonePADSBANK0()) {_BUSY_LOOP();}  }
+  void cyclePADSQSPI () { reset.resetPADSQSPI (true); reset.resetPADSQSPI (false); while (!resetDone.resetDonePADSQSPI ()) {_BUSY_LOOP();}   }
+  void cyclePIO0     () { reset.resetPIO0     (true); reset.resetPIO0     (false); while (!resetDone.resetDonePIO0     ()) {_BUSY_LOOP();}   }
+  void cyclePIO1     () { reset.resetPIO1     (true); reset.resetPIO1     (false); while (!resetDone.resetDonePIO1     ()) {_BUSY_LOOP();}   }
+  void cyclePIO2     () { reset.resetPIO2     (true); reset.resetPIO2     (false); while (!resetDone.resetDonePIO2     ()) {_BUSY_LOOP();}   }
+  void cyclePLLSYS   () { reset.resetPLLSYS   (true); reset.resetPLLSYS   (false); while (!resetDone.resetDonePLLSYS   ()) {_BUSY_LOOP();}   }
+  void cyclePLLUSB   () { reset.resetPLLUSB   (true); reset.resetPLLUSB   (false); while (!resetDone.resetDonePLLUSB   ()) {_BUSY_LOOP();}   }
+  void cyclePWM      () { reset.resetPWM      (true); reset.resetPWM      (false); while (!resetDone.resetDonePWM      ()) {_BUSY_LOOP();}   }
+  void cycleSHA256   () { reset.resetSHA256   (true); reset.resetSHA256   (false); while (!resetDone.resetDoneSHA256   ()) {_BUSY_LOOP();}   }
+  void cycleSPI0     () { reset.resetSPI0     (true); reset.resetSPI0     (false); while (!resetDone.resetDoneSPI0     ()) {_BUSY_LOOP();}   }
+  void cycleSPI1     () { reset.resetSPI1     (true); reset.resetSPI1     (false); while (!resetDone.resetDoneSPI1     ()) {_BUSY_LOOP();}   }
+  void cycleSYSCFG   () { reset.resetSYSCFG   (true); reset.resetSYSCFG   (false); while (!resetDone.resetDoneSYSCFG   ()) {_BUSY_LOOP();}   }
+  void cycleSYSINFO  () { reset.resetSYSINFO  (true); reset.resetSYSINFO  (false); while (!resetDone.resetDoneSYSINFO  ()) {_BUSY_LOOP();}   }
+  void cycleTBMAN    () { reset.resetTBMAN    (true); reset.resetTBMAN    (false); while (!resetDone.resetDoneTBMAN    ()) {_BUSY_LOOP();}   }
+  void cycleTIMER0   () { reset.resetTIMER0   (true); reset.resetTIMER0   (false); while (!resetDone.resetDoneTIMER0   ()) {_BUSY_LOOP();}   }
+  void cycleTIMER1   () { reset.resetTIMER1   (true); reset.resetTIMER1   (false); while (!resetDone.resetDoneTIMER1   ()) {_BUSY_LOOP();}   }
+  void cycleTRNG     () { reset.resetTRNG     (true); reset.resetTRNG     (false); while (!resetDone.resetDoneTRNG     ()) {_BUSY_LOOP();}   }
+  void cycleUART0    () { reset.resetUART0    (true); reset.resetUART0    (false); while (!resetDone.resetDoneUART0    ()) {_BUSY_LOOP();}   }
+  void cycleUART1    () { reset.resetUART1    (true); reset.resetUART1    (false); while (!resetDone.resetDoneUART1    ()) {_BUSY_LOOP();}   }
+  void cycleUSBCTRL  () { reset.resetUSBCTRL  (true); reset.resetUSBCTRL  (false); while (!resetDone.resetDoneUSBCTRL  ()) {_BUSY_LOOP();}   }
 };

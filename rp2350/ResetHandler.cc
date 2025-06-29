@@ -44,21 +44,27 @@ void bork() {}
   // https://github.com/dougsummerville/Bare-Metal-Raspberry-Pi-Pico-2/blob/dot/baremetal/_crt0.c
 
   resets.cyclePLLSYS();
+  auto pll = PLLs {}.sysPLL;
+  pll.cs.set(5, 0, 1);                      // REFDIV=1
+  pll.fbdiv.set(11, 0, 125);                // set VCO to (12*125) = 1500MHz
+  pll.power.set(5, 0, 0);                   // turn off power-down bits
+  while (!pll.cs.bit(31)) { _BUSY_LOOP(); } // wait for LOCK
+  pll.prim.set(18, 16, 5).set(14, 12, 2);   // divide clock by (5*2) to get 150MHz
 
   Clocks c;
 
-  // c.sys.control()
-  //     .set(31, 0, 0)
-  //     .auxSource(Clocks::SysControlStruct::AuxSource::PLL_SYS)
-  //     .clkSource(Clocks::SysControlStruct::ClkSource::CLK_SYS_AUX);
-  // while (!u8(c.sys.selected().source())) { _BUSY_LOOP() }
+  c.sys.control()
+      .set(31, 0, 0)
+      .auxSource(Clocks::SysControlStruct::AuxSource::PLL_SYS)
+      .clkSource(Clocks::SysControlStruct::ClkSource::CLK_SYS_AUX);
+  while (!u8(c.sys.selected().source())) { _BUSY_LOOP() }
   c.sys.div().set(31, 16, 1).set(15, 0, 0); // divide by 1.0
 
-  c.ref.control()
-      .set(31, 0, 0) // clear
-      .clkSource(Clocks::RefControlStruct::ClkSource::XOSC);
-  while (!u8(c.ref.selected().source())) { _BUSY_LOOP() }
-  c.ref.div().set(31, 16, 12).set(15, 0, 0); // divide by 12.0
+  // c.ref.control()
+  //     .set(31, 0, 0) // clear
+  //     .clkSource(Clocks::RefControlStruct::ClkSource::XOSC);
+  // while (!u8(c.ref.selected().source())) { _BUSY_LOOP() }
+  // c.ref.div().set(31, 16, 12).set(15, 0, 0); // divide by 12.0
 
   // c.refSelected().set(3, 0, 4); // select bit 2
   // while (c.refSelected().get(3, 0) != 4) { ArmInsns::nop(); }

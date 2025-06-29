@@ -7,8 +7,8 @@ namespace {
 
 struct PanicTX {
   [[gnu::noinline]] void baudDelay() {
-    // Empirically (i.e. not thoroughly tested or calibrated), delay about 1/9600 sec
-    for (u32 i = 0; i < 400; i++) { asm volatile("nop"); }
+    // appx 9600 baud
+    for (u32 i = 0; i < 1800; i++) { asm volatile("nop"); }
   }
 
   void bit(bool v) {
@@ -58,8 +58,10 @@ void __panic(PanicData const& pd) {
   constexpr static char const* YEL    = "\x1b[1;33;48;5;236m";
   constexpr static char const* NORMAL = "\x1b[0m";
 
+LOOP:
   PanicTX tx;
   for (u32 i = 0; i < 16; i++) { tx << '\n'; }
+
   tx << RED << "=== panic" << NORMAL << '\n';
   tx << "  r0:" << pd.r0 << "  r1:" << pd.r1 << "  r2:" << pd.r2 << "  r3:" << pd.r3 << '\n'
      << "  r4:" << pd.r4 << "  r5:" << pd.r5 << "  r6:" << pd.r6 << "  r7:" << pd.r7 << '\n'
@@ -131,7 +133,8 @@ void __panic(PanicData const& pd) {
 
   SIO sio;
   u32 i = 0;
-  while (true) { sio.gpioOut().bit(kPicoLED, (i++ >> 18) & 1); };
+
+  while (true) { sio.gpioOut().bit(kPicoLED, (i++ >> 21) & 1); };
   __builtin_unreachable();
 }
 

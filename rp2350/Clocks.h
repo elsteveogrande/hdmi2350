@@ -366,11 +366,16 @@ struct XOSC {
   Reg32 count {kBase + 0x10};
 };
 
-struct SYS_PLL {
-  constexpr static u32 kBase = 0x40050000;
+struct PLLs {
+  struct PLL {
+    u32 const base;
 
-  Reg32 cs {kBase + 0x00};
-  Reg32 power {kBase + 0x04};
-  Reg32 fbdiv {kBase + 0x08};
-  Reg32 prim {kBase + 0x0c};
+    Reg32 cs {base + 0x00};
+    Reg32 power {base + 0x04};
+    Reg32 fbdiv {base + 0x08};
+    Reg32 prim {base + 0x0c};
+  };
+
+  PLL sysPLL {0x40050000};
+  PLL usbPLL {0x40058000};
 };

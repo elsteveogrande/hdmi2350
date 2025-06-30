@@ -164,4 +164,4 @@ constexpr u8 kPanicUARTTX = 28; // Bit-bang panic info (9600 8N1); see Panic.cc
 constexpr u32 kSysPLLMHz = 150000000;
 constexpr u32 kPanicBaud = 9600;
 
-extern u32 millis;
+extern u32 volatile millis;

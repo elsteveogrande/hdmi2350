@@ -2,14 +2,15 @@
 #include "rp2350/M33.h"
 #include "rp2350/Resets.h"
 #include "rp2350/Timers.h"
+#include "rp2350/VecTable.h"
 
-u32 millis {0};
+u32 volatile millis {0};
 
 void enableIRQs() {
   M33 m33;
   // p83: Interrupt 0 is TIMER_IRQ_0 by convention
-  m33.nvic.cpr0.bit(16, true); // Clear IRQ flag
-  m33.nvic.ser0.bit(16, true); // [Re]enable IRQ
+  m33.nvic.cpr0.bit(0, true); // Clear IRQ flag
+  m33.nvic.ser0.bit(0, true); // [Re]enable IRQ
 }
 
 void timer0Rearm() {
@@ -18,18 +19,30 @@ void timer0Rearm() {
   enableIRQs();
 }
 
-void timer0Callback() {
-  ++millis;
+void timer0Handler() {
   Reg32 {0xeeeeeeee}.set(0xf0ccface);
+  ++(*(u32*)millis);
   timer0Rearm();
 }
 
 void milliTimerInit() {
+  millis = 0;
   Resets resets;
   resets.cycleTIMER0();
-  auto t0 = Timers::timer0();
-  t0.intEnable();
+
+  millis                = 0;
+  Handlers::handlers[0] = timer0Handler;
+
+  millis = 0;
+  Timers::timer0().intEnable();
+
+  millis = 0;
   timer0Rearm();
 }
 
-[[gnu::used]] [[gnu::retain]] void runtimeInit() { milliTimerInit(); }
+[[gnu::used]] [[gnu::retain]] void runtimeInit() {
+  milliTimerInit();
+  M33 m33;
+  Insns::enableIRQs();
+  // m33.nvic.triggerIRQ(0);
+}

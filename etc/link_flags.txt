@@ -7,3 +7,5 @@ arm-none-eabi
 -g
 -Wl,--gdb-index
 -ffreestanding
+-ffunction-sections
+-fdata-sections

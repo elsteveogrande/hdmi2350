@@ -8,6 +8,7 @@ OBJS := \
 	build/runtime/ABI.cc.o     			\
 	build/runtime/Init.cc.o     		\
 	build/runtime/Panic.cc.o     		\
+	build/runtime/RuntimeData.cc.o  \
 	build/runtime/String.cc.o    		\
 	build/hdmi/hdmi.cc.o
 

@@ -4,7 +4,7 @@
 
 namespace cxx {
 
-struct [[gnu::packed]] [[gnu::aligned(4)]] PanicData {
+struct [[gnu::aligned(4)]] PanicData {
   u32 sp;
   u32 r4;
   u32 r5;
@@ -26,12 +26,12 @@ struct [[gnu::packed]] [[gnu::aligned(4)]] PanicData {
   u32 psr;
 };
 
-[[noreturn]] __attribute__((interrupt())) void __hardFault();
-[[noreturn]] __attribute__((interrupt())) void __memManage();
-[[noreturn]] __attribute__((interrupt())) void __busFault();
-[[noreturn]] __attribute__((interrupt())) void __usageFault();
+[[noreturn]] [[gnu::aligned(16)]] __attribute__((interrupt())) void __hardFault();
+[[noreturn]] [[gnu::aligned(16)]] __attribute__((interrupt())) void __memManage();
+[[noreturn]] [[gnu::aligned(16)]] __attribute__((interrupt())) void __busFault();
+[[noreturn]] [[gnu::aligned(16)]] __attribute__((interrupt())) void __usageFault();
 
-[[gnu::used]] [[gnu::noinline]] [[noreturn]]
+[[gnu::used]] [[gnu::noinline]] [[gnu::aligned(16)]] [[noreturn]]
 void __panic(PanicData const& pd);
 
 } // namespace cxx

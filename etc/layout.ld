@@ -34,8 +34,9 @@ SECTIONS {
   .data                     : {} > FLASH
   .rodata                   : {} > FLASH
 
-  .stack      (NOLOAD)      : {} > STACK
-  .bss        (NOLOAD)      : {} > BSS
+  .stack        (NOLOAD)    : {} > STACK
+  .runtime_data (NOLOAD)    : {} > BSS
+  .bss          (NOLOAD)    : {} > BSS
 
   .framebuf   (NOLOAD)      : {} > FRAMEBUFFER
 }

@@ -26,3 +26,6 @@ thumbv8m.main-none-eabi
 -fno-omit-frame-pointer
 -mno-omit-leaf-frame-pointer
 -ffreestanding
+-ffunction-sections
+-fdata-sections
+-mno-unaligned-access

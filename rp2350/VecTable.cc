@@ -2,26 +2,28 @@
 #include "rp2350/Common.h"
 #include "runtime/Panic.h"
 
-void __attribute__((interrupt)) Handlers::nmi() {}
-void __attribute__((interrupt)) Handlers::sysTick() {}
-void __attribute__((interrupt)) Handlers::svCall() {}
-void __attribute__((interrupt)) Handlers::pendSV() {}
-void __attribute__((interrupt)) Handlers::dbgMon() {}
+[[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::nmi() {}
+[[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::sysTick() {}
+[[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::svCall() {}
+[[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::pendSV() {}
+[[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::dbgMon() {}
 
-[[gnu::noinline]] void Handlers::unknown(u32 i) {
+[[gnu::noinline]] [[gnu::aligned(16)]] void Handlers::unknown(u32 i) {
   // TODO: panic and report interrupt number
   (void)i;
   ArmInsns::nop();
 }
 
-[[gnu::noinline]] void Handlers::irqn(u8 i) {
+[[gnu::noinline]] [[gnu::aligned(16)]] void Handlers::irqn(u8 i) {
   auto* handler = handlers[i];
   if (handler) { handler(); }
 }
 
-[[gnu::noinline]] void Handlers::unknown() { unknown(ArmInsns::ipsr() & 0x1ff); }
+[[gnu::noinline]] [[gnu::aligned(16)]] void Handlers::unknown() {
+  unknown(ArmInsns::ipsr() & 0x1ff);
+}
 
-[[gnu::noinline]] void Handlers::irq() {
+[[gnu::noinline]] [[gnu::aligned(16)]] void Handlers::irq() {
   auto intn = ArmInsns::ipsr() & 0x1ff;
   if (intn >= 16 && intn < 64) {
     irqn(u8(intn - 16));

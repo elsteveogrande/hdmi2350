@@ -22,17 +22,17 @@ struct [[gnu::aligned(256)]] Handlers {
   static Handler handlers[64];
 
   /** Defined in `ResetHandler.cc` */
-  [[gnu::noinline]] [[noreturn]] static void reset();
+  [[gnu::noinline]] [[gnu::aligned(16)]] [[noreturn]] static void reset();
 
-  [[gnu::noinline]] static void irqn(u8 intNumber);
-  [[gnu::noinline]] static void unknown(u32 intNumber);
+  [[gnu::noinline]] [[gnu::aligned(16)]] static void irqn(u8 intNumber);
+  [[gnu::noinline]] [[gnu::aligned(16)]] static void unknown(u32 intNumber);
 
-  [[gnu::noinline]] __attribute__((interrupt)) static void nmi();
-  [[gnu::noinline]] __attribute__((interrupt)) static void svCall();
-  [[gnu::noinline]] __attribute__((interrupt)) static void dbgMon();
-  [[gnu::noinline]] __attribute__((interrupt)) static void pendSV();
-  [[gnu::noinline]] __attribute__((interrupt)) static void sysTick();
-  [[gnu::noinline]] __attribute__((interrupt)) static void irq();
-  [[gnu::noinline]] __attribute__((interrupt)) static void unknown();
+  [[gnu::noinline]] [[gnu::aligned(16)]] __attribute__((interrupt)) static void nmi();
+  [[gnu::noinline]] [[gnu::aligned(16)]] __attribute__((interrupt)) static void svCall();
+  [[gnu::noinline]] [[gnu::aligned(16)]] __attribute__((interrupt)) static void dbgMon();
+  [[gnu::noinline]] [[gnu::aligned(16)]] __attribute__((interrupt)) static void pendSV();
+  [[gnu::noinline]] [[gnu::aligned(16)]] __attribute__((interrupt)) static void sysTick();
+  [[gnu::noinline]] [[gnu::aligned(16)]] __attribute__((interrupt)) static void irq();
+  [[gnu::noinline]] [[gnu::aligned(16)]] __attribute__((interrupt)) static void unknown();
 };
 // clang-format on

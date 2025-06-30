@@ -2,6 +2,7 @@
 #include "rp2350/Common.h"
 #include "rp2350/M33.h"
 #include "rp2350/SIO.h"
+#include "runtime/RuntimeData.h"
 
 namespace {
 
@@ -48,12 +49,13 @@ struct PanicTX {
 
 namespace cxx {
 
-[[gnu::used]] [[gnu::noinline]] [[noreturn]]
+[[gnu::used]] [[gnu::noinline]] [[gnu::aligned(16)]] [[noreturn]]
 void __panic(PanicData const& pd) {
 
-  // Disable all interrupts immediately
   M33 m33;
-  m33.nvic.cer0.set(31, 0, 0xffffffff);
+
+  // Disable all interrupts immediately
+  // m33.nvic.cer0.set(31, 0, 0xffffffff);
 
   constexpr static char const* RED    = "\x1b[0;41;1;37m";
   constexpr static char const* YEL    = "\x1b[1;33;48;5;236m";
@@ -62,7 +64,9 @@ void __panic(PanicData const& pd) {
   PanicTX tx;
   for (u32 i = 0; i < 16; i++) { tx << '\n'; }
 
-  tx << RED << "=== panic" << NORMAL << '\n';
+  auto& rd = runtimeData;
+
+  tx << RED << "=== panic @ " << rd.millis << NORMAL << "ms\n";
   tx << "  r0:" << pd.r0 << "  r1:" << pd.r1 << "  r2:" << pd.r2 << "  r3:" << pd.r3 << '\n'
      << "  r4:" << pd.r4 << "  r5:" << pd.r5 << "  r6:" << pd.r6 << "  r7:" << pd.r7 << '\n'
      << "  r8:" << pd.r8 << "  r9:" << pd.r9 << " r10:" << pd.r10 << " r11:" << pd.r11 << '\n'
@@ -103,7 +107,7 @@ void __panic(PanicData const& pd) {
   if (sr & 0x02) { tx << " DACCVIOL"; }
   if (sr & 0x01) { tx << " IACCVIOL"; }
   tx << '\n';
-  if (sr ^ 0x80) { tx << "  MMFAR:" << m33.MMFAR.val() << '\n'; }
+  if (sr ^ 0x80) { tx << "  MMFAR:" << m33.MMFAR.get(31, 0) << '\n'; }
 
   sr = (cfsr >> 8) & 0xff;
   tx << "   BFSR:" << sr;
@@ -114,7 +118,7 @@ void __panic(PanicData const& pd) {
   if (sr & 0x02) { tx << " PRECISERR"; }
   if (sr & 0x01) { tx << " IBUSERR"; }
   tx << '\n';
-  if (sr ^ 0x80) { tx << "   BFAR:" << m33.BFAR.val() << '\n'; }
+  if (sr ^ 0x80) { tx << "   BFAR:" << m33.BFAR.get(31, 0) << '\n'; }
 
   sr = cfsr >> 16;
   tx << "   UFSR:" << sr;

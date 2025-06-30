@@ -3,8 +3,7 @@
 #include "rp2350/Resets.h"
 #include "rp2350/Timers.h"
 #include "rp2350/VecTable.h"
-
-u32 volatile millis {0};
+#include "runtime/RuntimeData.h"
 
 void enableIRQs() {
   M33 m33;
@@ -20,23 +19,16 @@ void timer0Rearm() {
 }
 
 void timer0Handler() {
-  Reg32 {0xeeeeeeee}.set(0xf0ccface);
-  ++(*(u32*)millis);
+  ++runtimeData.millis;
   timer0Rearm();
+  Reg32 {0xeeeeeeee}.set(0xf0ccface);
 }
 
 void milliTimerInit() {
-  millis = 0;
   Resets resets;
   resets.cycleTIMER0();
-
-  millis                = 0;
   Handlers::handlers[0] = timer0Handler;
-
-  millis = 0;
   Timers::timer0().intEnable();
-
-  millis = 0;
   timer0Rearm();
 }
 
@@ -44,5 +36,5 @@ void milliTimerInit() {
   milliTimerInit();
   M33 m33;
   Insns::enableIRQs();
-  // m33.nvic.triggerIRQ(0);
+  m33.nvic.triggerIRQ(0);
 }

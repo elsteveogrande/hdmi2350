@@ -52,5 +52,6 @@
   while (!ticks.proc0Control().running()) { _BUSY_LOOP(); }
 
   M33 m33;
-  m33.ccr.div0Trap(true).unalignedTrap(true);
+  m33.ccr.div0Trap(true);
+  m33.ccr.unalignedTrap(true);
 }

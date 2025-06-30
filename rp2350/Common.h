@@ -114,6 +114,10 @@ struct ArmInsns {
   static void wfi() { asm volatile("wfi"); }
   static void wfe() { asm volatile("wfe"); }
 
+  static u8   currentInterrupt() { return u8(ipsr() & 0x1ff); }
+  static void disableIRQs() { cpsid(); }
+  static void enableIRQs() { cpsie(); }
+
   static void cpsid() { asm volatile("cpsid i"); }
   static void cpsie() { asm volatile("cpsie i"); }
 
@@ -125,8 +129,7 @@ struct ArmInsns {
   }
 };
 
-inline void __disable_irq() { ArmInsns::cpsie(); }
-inline void __enable_irq() { ArmInsns::cpsie(); }
+using Insns = ArmInsns;
 
 #endif
 
@@ -139,7 +142,7 @@ inline void _busy_loop(char const* file = nullptr, unsigned line = 0) {
   (void)file;
   (void)line;
 #if defined(__arm__)
-  ArmInsns::nop();
+  Insns::nop();
 #endif
 }
 
@@ -160,3 +163,5 @@ constexpr u8 kPanicUARTTX = 28; // Bit-bang panic info (9600 8N1); see Panic.cc
 
 constexpr u32 kSysPLLMHz = 150000000;
 constexpr u32 kPanicBaud = 9600;
+
+extern u32 millis;

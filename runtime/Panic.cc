@@ -5,12 +5,9 @@
 
 namespace {
 
-constexpr u32 kSysPLLMHz = 150000000;
-constexpr u32 kPanicBaud = 9600;
-
 struct PanicTX {
   [[gnu::noinline]] void baudDelay() {
-    constexpr static u32 kLoopsPerBaud = kSysPLLMHz / (kPanicBaud * 9);
+    constexpr u32 kLoopsPerBaud = kSysPLLMHz / (kPanicBaud * 9);
     for (u32 i = 0; i < kLoopsPerBaud; i++) { asm volatile("nop"); }
 
     /*
@@ -78,7 +75,6 @@ void __panic(PanicData const& pd) {
   constexpr static char const* YEL    = "\x1b[1;33;48;5;236m";
   constexpr static char const* NORMAL = "\x1b[0m";
 
-LOOP:
   PanicTX tx;
   for (u32 i = 0; i < 16; i++) { tx << '\n'; }
 
@@ -92,11 +88,11 @@ LOOP:
   tx << "\nM33 SCB:\n";
   tx << "  ACTLR:" << m33.ACTLR.val();
   tx << "  CPUID:" << m33.CPUID.val();
-  tx << "   ICSR:" << m33.ICSR.val();
+  tx << "   ICSR:" << m33.icsr.val();
   tx << "   VTOR:" << m33.VTOR.val();
   tx << "  AIRCR:" << m33.AIRCR.val() << '\n';
   tx << "    SCR:" << m33.SCR.val();
-  tx << "    CCR:" << m33.CCR.val();
+  tx << "    CCR:" << m33.ccr.val();
   tx << "  SHPR1:" << m33.SHPR1.val();
   tx << "  SHPR2:" << m33.SHPR2.val();
   tx << "  SHPR3:" << m33.SHPR3.val() << '\n';

@@ -2,13 +2,15 @@
 
 #include "rp2350/Common.h"
 
+// 3.7. Cortex-M33 Processor
+
 struct M33 {
   constexpr static u32 kPPBBase = 0xe0000000;
 
-  Reg32 nvicISER0 {kPPBBase + 0xe100}; // set enable IRQ (bits 0..31)
-  Reg32 nvicICER0 {kPPBBase + 0xe180}; // clear enable IRQ (bits 0..31)
-  Reg32 nvicISPR0 {kPPBBase + 0xe200}; // set pending state of IRQ (bits 0..31)
-  Reg32 nvicICPR0 {kPPBBase + 0xe280}; // clear pending state of IRQ (bits 0..31)
+  Reg32 nvicISER0 {kPPBBase + 0xe100}; // Interrupt (0..31) Set Enable Registers
+  Reg32 nvicICER0 {kPPBBase + 0xe180}; // Interrupt (0..31) Clear Enable Registers
+  Reg32 nvicISPR0 {kPPBBase + 0xe200}; // Interrupt (0..31) Set Pending Registers
+  Reg32 nvicICPR0 {kPPBBase + 0xe280}; // Interrupt (0..31) Clear Pending Registers
 
   struct ACTLR : Reg32 {};
   ACTLR ACTLR {0xE000E008}; // Auxiliary Control Register - Cortex-M33
@@ -16,8 +18,26 @@ struct M33 {
   struct CPUID : Reg32 {};
   CPUID CPUID {0xE000ED00}; // CPUID Base Register - ARMv8M
 
-  struct ICSR : Reg32 {};
-  ICSR ICSR {0xE000ED04}; // M33 Interrupt Control and State Register
+  struct ICSRStructs {
+    struct Fields {
+      bool  pendingNMI(this auto const& self) { return self.bit(31); }
+      auto& pendingNMIClear(this auto const& self, bool v) { return self.bit(31, v); }
+
+      bool  pendingSV(this auto const& self) { return self.bit(30); }
+      auto& pendingSVClear(this auto const& self, bool v) { return self.bit(30, v); }
+
+      bool  pendingSysTick(this auto const& self) { return self.bit(28); }
+      auto& pendingSysTickClear(this auto const& self, bool v) { return self.bit(28, v); }
+    };
+    // clang-format off
+    // Boilerplate for R, U classes
+    struct U;
+    struct R : Fields, Reg<R, U> { explicit R(auto addr) : Reg(addr) {} };
+    struct U : Fields, Update<U, R> { explicit U(auto* reg) : Update(reg) {} };
+    // clang-format on
+  };
+  using ICSR = ICSRStructs::R;
+  ICSR icsr {0xE000ED04}; // M33 Interrupt Control and State Register
 
   struct VTOR : Reg32 {};
   VTOR VTOR {0xE000ED08}; // Vector Table Offset Register
@@ -28,8 +48,20 @@ struct M33 {
   struct SCR : Reg32 {};
   SCR SCR {0xE000ED10}; // System Control Register - Cortex-M33
 
-  struct CCR : Reg32 {};
-  CCR CCR {0xE000ED14}; // Configuration and Control Register
+  struct CCRStructs {
+    struct Fields {
+      auto& div0Trap(this auto const& self, bool v) { return self.bit(4, v); }
+      auto& unalignedTrap(this auto const& self, bool v) { return self.bit(3, v); }
+    };
+    // clang-format off
+    // Boilerplate for R, U classes
+    struct U;
+    struct R : Fields, Reg<R, U> { explicit R(auto addr) : Reg(addr) {} };
+    struct U : Fields, Update<U, R> { explicit U(auto* reg) : Update(reg) {} };
+    // clang-format on
+  };
+  using CCR = CCRStructs::R;
+  CCR ccr {0xE000ED14}; // Configuration and Control Register
 
   struct SHPR1 : Reg32 {};
   SHPR1 SHPR1 {0xE000ED18}; // System Handler Priority Register 1 -ARMv8M

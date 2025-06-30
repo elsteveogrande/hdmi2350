@@ -1,12 +1,14 @@
 OBJS := \
 	build/rp2350/Common.cc.o     		\
+	build/rp2350/Faults.s.o         \
 	build/rp2350/ImageDef.cc.o   		\
+	build/rp2350/Init.cc.o      		\
 	build/rp2350/ResetHandler.cc.o  \
 	build/rp2350/VecTable.cc.o   		\
 	build/runtime/ABI.cc.o     			\
+	build/runtime/Init.cc.o     		\
 	build/runtime/Panic.cc.o     		\
 	build/runtime/String.cc.o    		\
-	build/rp2350/Faults.s.o         \
 	build/hdmi/hdmi.cc.o
 
 all: _build_dirs build/hdmi2350.bin.uf2

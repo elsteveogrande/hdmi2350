@@ -147,9 +147,6 @@ inline void _busy_loop(char const* file = nullptr, unsigned line = 0) {
 #define _BUSY_LOOP() { do { _busy_loop(__FILE__, __LINE__); } while(false); }
 // clang-format on
 
-constexpr u8 kPicoLED     = 25; // Pico2-specific: LED GPIO is number 25
-constexpr u8 kPanicUARTTX = 28; // Bit-bang panic info (9600 8N1); see Panic.cc
-
 void initGPIOOut(u8 index);
 void initGPIOIn(u8 index, bool pullUp = false, bool schmitt = true);
 void initHSTX(u8 index);
@@ -157,3 +154,9 @@ void initHSTX(u8 index);
 // Random assorted stuff.
 // XXX Move these
 void convU32Hex(char* out, u32 x);
+
+constexpr u8 kPicoLED     = 25; // Pico2-specific: LED GPIO is number 25
+constexpr u8 kPanicUARTTX = 28; // Bit-bang panic info (9600 8N1); see Panic.cc
+
+constexpr u32 kSysPLLMHz = 150000000;
+constexpr u32 kPanicBaud = 9600;

@@ -1,10 +1,7 @@
 #include "rp2350/Common.h"
-#include "rp2350/GPIO.h"
 #include "rp2350/HSTX.h"
-#include "rp2350/M33.h"
 #include "rp2350/Resets.h"
 #include "rp2350/SIO.h"
-#include "runtime/Panic.h"
 
 // extern "C" {
 // // Defined in `fb.rs`:
@@ -89,24 +86,6 @@
 //   u16 line_ {};
 // };
 
-u32 millis;
-
-void timer0Callback() {
-  // ++millis;
-
-  // M33    m33;
-  // Timers timers;
-  // auto   t = timers.timer0();
-
-  // // Reschedule alarm
-  // t.alarm0().set(1000 + t.timeLR().val());
-
-  // // Reenable firing of alarm
-  // // p83: Interrupt 0 is TIMER_IRQ_0 by convention
-  // m33.nvicICPR0.bit(0, true); // Clear IRQ flag
-  // m33.nvicISER0.bit(0, true); // [Re]enable IRQ
-}
-
 extern "C" {
 
 [[gnu::used]] [[gnu::retain]] [[noreturn]] void start() {
@@ -114,6 +93,10 @@ extern "C" {
   Resets resets;
   HSTX   hstx;
   SIO    sio;
+
+  Reg32 {0xcccccccc}.bit(0, 0x11110001);
+
+  resets.cyclePADSBANK0();
 
   // Init HSTX
   resets.reset.resetHSTX(true);

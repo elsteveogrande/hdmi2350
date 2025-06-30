@@ -53,7 +53,7 @@ void __panic(PanicData const& pd) {
 
   // Disable all interrupts immediately
   M33 m33;
-  m33.nvicICER0.set(31, 0, 0xffffffff);
+  m33.nvic.cer0.set(31, 0, 0xffffffff);
 
   constexpr static char const* RED    = "\x1b[0;41;1;37m";
   constexpr static char const* YEL    = "\x1b[1;33;48;5;236m";

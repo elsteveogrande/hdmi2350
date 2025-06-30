@@ -7,10 +7,17 @@
 struct M33 {
   constexpr static u32 kPPBBase = 0xe0000000;
 
-  Reg32 nvicISER0 {kPPBBase + 0xe100}; // Interrupt (0..31) Set Enable Registers
-  Reg32 nvicICER0 {kPPBBase + 0xe180}; // Interrupt (0..31) Clear Enable Registers
-  Reg32 nvicISPR0 {kPPBBase + 0xe200}; // Interrupt (0..31) Set Pending Registers
-  Reg32 nvicICPR0 {kPPBBase + 0xe280}; // Interrupt (0..31) Clear Pending Registers
+  struct NVIC {
+    Reg32 ser0 {kPPBBase + 0xe100}; // Interrupt (0..31) Set Enable Registers
+    Reg32 cer0 {kPPBBase + 0xe180}; // Interrupt (0..31) Clear Enable Registers
+    Reg32 spr0 {kPPBBase + 0xe200}; // Interrupt (0..31) Set Pending Registers
+    Reg32 cpr0 {kPPBBase + 0xe280}; // Interrupt (0..31) Clear Pending Registers
+
+    void enableIRQ(u8 irq) { ser0.bit(irq, true); }
+    void disableIRQ(u8 irq) { cer0.bit(irq, true); }
+    void triggerIRQ(u8 irq) { spr0.bit(irq, true); }
+  };
+  NVIC nvic;
 
   struct ACTLR : Reg32 {};
   ACTLR ACTLR {0xE000E008}; // Auxiliary Control Register - Cortex-M33

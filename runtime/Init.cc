@@ -8,8 +8,8 @@ u32 millis {0};
 void enableIRQs() {
   M33 m33;
   // p83: Interrupt 0 is TIMER_IRQ_0 by convention
-  m33.nvicICPR0.bit(16, true); // Clear IRQ flag
-  m33.nvicISER0.bit(16, true); // [Re]enable IRQ
+  m33.nvic.cpr0.bit(16, true); // Clear IRQ flag
+  m33.nvic.ser0.bit(16, true); // [Re]enable IRQ
 }
 
 void timer0Rearm() {

@@ -5,10 +5,30 @@
 
 namespace {
 
+constexpr u32 kSysPLLMHz = 150000000;
+constexpr u32 kPanicBaud = 9600;
+
 struct PanicTX {
   [[gnu::noinline]] void baudDelay() {
-    // appx 9600 baud
-    for (u32 i = 0; i < 1800; i++) { asm volatile("nop"); }
+    constexpr static u32 kLoopsPerBaud = kSysPLLMHz / (kPanicBaud * 9);
+    for (u32 i = 0; i < kLoopsPerBaud; i++) { asm volatile("nop"); }
+
+    /*
+      asm volatile(R"(
+
+      mov.w r0, %0
+
+      @ The following loop takes 9 cycles... (I'm pretty sure)
+  .p2align 4
+  1:  subs r0, #1
+      nop
+      bne 1b
+
+                    )"
+                    :
+                    : "g"(kLoopsPerBaud)
+                    : "r0", "cc");
+  */
   }
 
   void bit(bool v) {
@@ -133,8 +153,8 @@ LOOP:
 
   SIO sio;
   u32 i = 0;
-
   while (true) { sio.gpioOut().bit(kPicoLED, (i++ >> 21) & 1); };
+
   __builtin_unreachable();
 }
 

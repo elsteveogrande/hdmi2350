@@ -8,24 +8,8 @@ namespace {
 struct PanicTX {
   [[gnu::noinline]] void baudDelay() {
     constexpr u32 kLoopsPerBaud = kSysPLLMHz / (kPanicBaud * 9);
+    // TODO: should asm volatile this
     for (u32 i = 0; i < kLoopsPerBaud; i++) { asm volatile("nop"); }
-
-    /*
-      asm volatile(R"(
-
-      mov.w r0, %0
-
-      @ The following loop takes 9 cycles... (I'm pretty sure)
-  .p2align 4
-  1:  subs r0, #1
-      nop
-      bne 1b
-
-                    )"
-                    :
-                    : "g"(kLoopsPerBaud)
-                    : "r0", "cc");
-  */
   }
 
   void bit(bool v) {

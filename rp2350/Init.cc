@@ -36,21 +36,21 @@
   while (!u8(c.sys.selected().source())) { _BUSY_LOOP(); }
   c.sys.div().set(31, 16, 1).set(15, 0, 0); // divide by 1.0
 
-  // c.ref.control()
-  //     .set(31, 0, 0) // clear
-  //     .clkSource(Clocks::RefControlStruct::ClkSource::XOSC);
-  // while (!u8(c.ref.selected().source())) { _BUSY_LOOP(); }
-  // c.ref.div().set(31, 16, 12).set(15, 0, 0); // divide by 12.0
+  c.ref.control()
+      .set(31, 0, 0) // clear
+      .clkSource(Clocks::RefControlStruct::ClkSource::XOSC);
+  while (!u8(c.ref.selected().source())) { _BUSY_LOOP(); }
+  c.ref.div().set(31, 16, 12).set(15, 0, 0); // divide by 12.0
 
   // p569: SDK expects nominal 1uS system ticks, as does Arm internals.
   // Although we don't use the SDK we'll assume 1uS everywhere as well.
 
-  // Ticks ticks;
-  // ticks.proc0Control().enable(0); // disable for config
-  // ticks.proc0Cycles().count(12);  // 12 clocks @ 12 MHz xtal -> 1 µs
-  // ticks.proc0Control().enable(1);
-  // while (!ticks.proc0Control().running()) { _BUSY_LOOP(); }
+  Ticks ticks;
+  ticks.proc0Control().enable(0); // disable for config
+  ticks.proc0Cycles().count(12);  // 12 clocks @ 12 MHz xtal -> 1 µs
+  ticks.proc0Control().enable(1);
+  while (!ticks.proc0Control().running()) { _BUSY_LOOP(); }
 
-  // M33 m33;
-  // m33.ccr.div0Trap(true).unalignedTrap(true);
+  M33 m33;
+  m33.ccr.div0Trap(true).unalignedTrap(true);
 }

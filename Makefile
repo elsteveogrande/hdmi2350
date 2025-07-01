@@ -7,7 +7,6 @@ OBJS := \
 	build/rp2350/ImageDef.cc.o   		\
 	build/rp2350/Init.cc.o      		\
 	build/rp2350/ResetHandler.cc.o  \
-	build/rp2350/SysTick.cc.o    	  \
 	build/rp2350/VecTable.cc.o   		\
 	build/runtime/ABI.cc.o     			\
 	build/runtime/Init.cc.o     		\

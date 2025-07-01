@@ -1,10 +1,12 @@
 #include "rp2350/VecTable.h"
 #include "rp2350/Common.h"
+#include "rp2350/VecTable.h"
 #include "runtime/Panic.h"
+#include "runtime/RuntimeData.h"
 
-// see:
-//  SysTick.cc
-//  ResetHandler.cc
+// see also: ResetHandler.cc
+
+[[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::sysTick() { ++runtimeData.millis; }
 
 [[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::nmi() {}
 [[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::svCall() {}

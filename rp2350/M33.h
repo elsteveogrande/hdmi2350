@@ -7,6 +7,40 @@
 struct M33 {
   constexpr static u32 kPPBBase = 0xe0000000;
 
+  // SysTick Control and Status Register
+  struct SysTick {
+    struct CSRStructs {
+      enum class ClockSource { EXT_REF_CLK = 0, PROC_CLK = 1 };
+
+      struct Fields {
+        bool count(this auto const& self) { return self.bit(16); }
+
+        ClockSource source(this auto const& self) { return self.bit(2); }
+        bool        tickInt(this auto const& self) { return self.bit(1); }
+        bool        enable(this auto const& self) { return self.bit(0); }
+
+        auto& source(this auto const& self, ClockSource v) { return self.bit(2, v); }
+        auto& tickInt(this auto const& self, bool v) { return self.bit(1, v); }
+        auto& enable(this auto const& self, bool v) { return self.bit(0, v); }
+      };
+      // clang-format off
+      // Boilerplate for R, U classes
+      struct U;
+      struct R : Fields, Reg<R, U> {
+        using ClockSource = ClockSource;
+        explicit R(auto addr) : Reg(addr) {}
+      };
+      struct U : Fields, Update<U, R> { explicit U(auto* reg) : Update(reg) {} };
+      // clang-format on
+    };
+    using CSR = CSRStructs::R;
+
+    CSR   csr {kPPBBase + 0xe010}; // SysTick Control and Status Register
+    Reg32 rvr {kPPBBase + 0xe014}; // SysTick Reload Value Register
+  };
+
+  SysTick sysTick;
+
   struct NVIC {
     Reg32 ser0 {kPPBBase + 0xe100}; // Interrupt (0..31) Set Enable Registers
     Reg32 cer0 {kPPBBase + 0xe180}; // Interrupt (0..31) Clear Enable Registers

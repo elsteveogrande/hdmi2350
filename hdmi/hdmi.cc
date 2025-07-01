@@ -2,7 +2,6 @@
 #include "rp2350/HSTX.h"
 #include "rp2350/Resets.h"
 #include "rp2350/SIO.h"
-#include "runtime/RuntimeData.h"
 
 // extern "C" {
 // // Defined in `fb.rs`:
@@ -94,15 +93,6 @@ extern "C" {
   Resets resets;
   HSTX   hstx;
   SIO    sio;
-
-  u32 i = 0;
-  while (true) {
-    // if (runtimeData.millis > 0) { break; }
-    ++i;
-    SIO {}.gpioOut().bit(kPicoLED, (i >> 17) & 1);
-  }
-
-  Reg32 {0xcccccccc}.bit(0, 0x11110001);
 
   resets.cyclePADSBANK0();
 

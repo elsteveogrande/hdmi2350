@@ -2,11 +2,13 @@
 
 #include "rp2350/Common.h"
 
-/*
+/**
 Section 7.5, Subsystem Resets
 https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
-*/
 
+See also the `Resettable` base class which is mixed in to peripherals' classes,
+as a convenience.
+*/
 struct Resets {
 
   // clang-format off

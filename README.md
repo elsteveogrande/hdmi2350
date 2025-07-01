@@ -258,7 +258,15 @@ outside of VSyncs and HSyncs.
 https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
 
 ## ARM
-https://developer.arm.com/documentation/100235/0100/The-Cortex-M33-Processor/Exception-model/Vector-table
+
+### References
+
+* https://developer.arm.com/documentation/100235/0100/The-Cortex-M33-Processor/Exception-model/Vector-table
+
+### Links to interesting and helpful code
+
+* https://github.com/Chalandi/Blinky_Pico2_dual_core_nosdk/blob/master/Code/Mcal/Clock/Clock.c
+* https://github.com/dougsummerville/Bare-Metal-Raspberry-Pi-Pico-2/blob/dot/baremetal/_crt0.c
 
 ## HDMI video mode
 https://www.reddit.com/r/raspberrypipico/comments/1fj0vxg/can_you_get_169_video_with_hstx/

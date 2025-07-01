@@ -1,20 +1,13 @@
 #pragma once
 
 #include "Common.h"
+#include "Resets.h"
 
 // Covers several components from Chapter 8, "Clocks":
 // clocks, XOSC, PLL, Tick generators
 
 struct Clocks {
   constexpr static u32 kBase = 0x40010000;
-
-  /*
-  BEWARE that these different clock control registers,
-  and their auxiliary / clock-source bit fields, all
-  differ subtly.
-
-  TODO: refactor this insanity
-  */
 
   struct GPControlStruct {
     enum class AuxSource : u8 {
@@ -364,18 +357,40 @@ struct XOSC {
   Reg32 dormant {kBase + 0x08};
   Reg32 startup {kBase + 0x0c};
   Reg32 count {kBase + 0x10};
+
+  /** Configure and enable XOSC. */
+  void init(u32 delayCycles = 250000);
 };
 
-struct PLLs {
-  struct PLL {
-    u32 const base;
+struct PLL {
+  u32 const base_ {};
 
-    Reg32 cs {base + 0x00};
-    Reg32 power {base + 0x04};
-    Reg32 fbdiv {base + 0x08};
-    Reg32 prim {base + 0x0c};
-  };
+  Reg32 cs {base_ + 0x00};
+  Reg32 power {base_ + 0x04};
+  Reg32 fbdiv {base_ + 0x08};
+  Reg32 prim {base_ + 0x0c};
 
-  PLL sysPLL {0x40050000};
-  PLL usbPLL {0x40058000};
+  void init(u16 fbDiv, u8 div1, u8 div2 = 1, u8 refDiv = 1);
+};
+
+struct SysPLL : PLL {
+  void reset() { Resets {}.cyclePLLSYS(); }
+
+  SysPLL() : PLL {0x40050000} {}
+
+  void init() {
+    // Assuming 12MHz XOSC, set sys PLL to (12 * 125 / (5 * 2)) == 150 MHz
+    PLL::init(125, 5, 2);
+  }
+};
+
+struct USBPLL : PLL {
+  void reset() { Resets {}.cyclePLLUSB(); }
+
+  USBPLL() : PLL {0x40058000} {}
+
+  void initDefault() {
+    // Assuming 12MHz XOSC, set USB PLL to (12 * 100 / 25) == 48 MHz
+    init(100, 5, 5);
+  }
 };

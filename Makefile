@@ -2,6 +2,7 @@
 #   brew install llvm lldb lld openocd
 
 OBJS := \
+	build/rp2350/Clocks.cc.o   		  \
 	build/rp2350/Common.cc.o     		\
 	build/rp2350/Faults.s.o         \
 	build/rp2350/ImageDef.cc.o   		\

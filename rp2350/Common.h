@@ -159,7 +159,7 @@ void initHSTX(u8 index);
 void convU32Hex(char* out, u32 x);
 
 constexpr u8 kPicoLED     = 25; // Pico2-specific: LED GPIO is number 25
-constexpr u8 kPanicUARTTX = 28; // Bit-bang panic info (9600 8N1); see Panic.cc
+constexpr u8 kPanicUARTTX = 0;  // Bit-bang panic info (9600 8N1); see Panic.cc
 
 constexpr u32 kSysPLLMHz = 150000000;
 constexpr u32 kPanicBaud = 9600;

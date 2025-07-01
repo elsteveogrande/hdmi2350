@@ -33,7 +33,7 @@ start_openocd:
 
 flash: build/hdmi2350.elf
 	# Uploads .ELF directly (not bin / uf2) via openocd
-	echo "program build/hdmi2350.elf verify" | nc localhost 4444
+	echo "program build/hdmi2350.elf verify reset" | nc localhost 4444
 
 lldb: build/hdmi2350.elf
 	# Also see: https://web.navan.dev/posts/2024-08-08-openocd-macos-lldb.html

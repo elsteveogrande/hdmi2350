@@ -113,10 +113,11 @@ struct ArmInsns {
   static void nop() { asm volatile("nop"); }
   static void wfi() { asm volatile("wfi"); }
   static void wfe() { asm volatile("wfe"); }
-
   static u8   currentInterrupt() { return u8(ipsr() & 0x1ff); }
   static void disableIRQs() { cpsid(); }
   static void enableIRQs() { cpsie(); }
+
+  // ARM Specifics
 
   static void cpsid() { asm volatile("cpsid i"); }
   static void cpsie() { asm volatile("cpsie i"); }

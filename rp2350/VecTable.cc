@@ -2,6 +2,10 @@
 #include "rp2350/Common.h"
 #include "runtime/Panic.h"
 
+// see:
+//  SysTick.cc
+//  ResetHandler.cc
+
 [[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::nmi() {}
 [[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::svCall() {}
 [[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::pendSV() {}
@@ -11,11 +15,6 @@
   // TODO: panic and report interrupt number
   (void)i;
   ArmInsns::nop();
-}
-
-[[gnu::noinline]] [[gnu::aligned(16)]] void Handlers::irqn(u8 i) {
-  auto* handler = handlers[i];
-  if (handler) { handler(); }
 }
 
 [[gnu::noinline]] [[gnu::aligned(16)]] void Handlers::unknown() {
@@ -29,6 +28,11 @@
   } else {
     unknown(intn);
   }
+}
+
+[[gnu::noinline]] [[gnu::aligned(16)]] void Handlers::irqn(u8 i) {
+  auto* handler = handlers[i];
+  if (handler) { handler(); }
 }
 
 using H = Handlers;

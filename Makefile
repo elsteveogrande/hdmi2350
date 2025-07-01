@@ -41,6 +41,10 @@ lldb: build/hdmi2350.elf
 	#   platform connect connect://localhost:3333
 	lldb build/hdmi2350.elf
 
+gdb:
+	# target extended-remote localhost:3333
+	gdb build/hdmi2350.elf
+
 build/hdmi2350.bin.uf2: build/hdmi2350.bin etc/bin2uf2.py
 	etc/bin2uf2.py $<
 

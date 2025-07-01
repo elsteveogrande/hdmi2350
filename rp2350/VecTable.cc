@@ -3,7 +3,6 @@
 #include "runtime/Panic.h"
 
 [[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::nmi() {}
-[[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::sysTick() {}
 [[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::svCall() {}
 [[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::pendSV() {}
 [[gnu::aligned(16)]] void __attribute__((interrupt)) Handlers::dbgMon() {}

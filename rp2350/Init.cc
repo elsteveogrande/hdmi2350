@@ -16,17 +16,16 @@
   Clocks c;
 
   c.sys.control()
-      .set(31, 0, 0)
       .auxSource(Clocks::SysControlStruct::AuxSource::PLL_SYS)
-      .clkSource(Clocks::SysControlStruct::ClkSource::CLK_SYS_AUX);
-  while (!u8(c.sys.selected().source())) { _BUSY_LOOP(); }
+      .clkSource(Clocks::SysControlStruct::ClkSource::CLK_SYS_AUX)
+      .enable(true);
   c.sys.div().set(31, 16, 1).set(15, 0, 0); // divide by 1.0
 
-  c.ref.control()
-      .set(31, 0, 0) // clear
-      .clkSource(Clocks::RefControlStruct::ClkSource::XOSC);
-  while (!u8(c.ref.selected().source())) { _BUSY_LOOP(); }
+  c.ref.control().clkSource(Clocks::RefControlStruct::ClkSource::XOSC);
   c.ref.div().set(31, 16, 1).set(15, 0, 0); // divide by 1.0
+
+  c.peri.control().auxSource(Clocks::PeriControlStruct::AuxSource::XOSC).enable(true);
+  c.peri.div().set(31, 16, 1).set(15, 0, 0); // divide by 1.0
 
   // p569: SDK expects nominal 1uS system ticks, as does Arm internals.
   // Although we don't use the SDK we'll assume 1uS everywhere as well.

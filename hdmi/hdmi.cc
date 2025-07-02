@@ -1,6 +1,6 @@
+#include "rp2350/Clocks.h"
 #include "rp2350/Common.h"
 #include "rp2350/HSTX.h"
-#include "rp2350/Resets.h"
 #include "rp2350/SIO.h"
 
 // extern "C" {
@@ -90,16 +90,12 @@ extern "C" {
 
 [[gnu::used]] [[gnu::retain]] [[noreturn]] void start() {
 
-  Resets resets;
-  HSTX   hstx;
-  SIO    sio;
+  auto hstxClock = Clocks {}.hstx;
+  hstxClock.control().auxSource(Clocks::HSTXControlStruct::AuxSource::PLL_SYS).enable(true);
+  hstxClock.div().set(31, 16, 1).set(15, 0, 0); // divide by 1.0
 
-  resets.cyclePADSBANK0();
-
-  // Init HSTX
-  resets.reset.resetHSTX(true);
-  resets.reset.resetHSTX(false);
-  while (!resets.resetDone.resetDoneHSTX()) { _BUSY_LOOP(); }
+  HSTX hstx;
+  hstx.reset();
 
   // Assume system clock (SYSPLL) is 150 MHz, the default for Pico2.
   // We want to transmit at a 30 MHz pixel clock, with each TMDS bit-time
@@ -140,20 +136,25 @@ extern "C" {
   // instead, specify one selection of bits, and rotate the whole data word,
   // in order to send two bits at a time, 5 times.
 
+  hstx.bit(7).clock(true);
+  hstx.bit(6).clock(true).invert(true);
+
+  hstx.bit(5).selectP(29).selectN(28);
+  hstx.bit(4).selectP(29).selectN(28).invert(true);
+
+  hstx.bit(3).selectP(19).selectN(18);
+  hstx.bit(2).selectP(19).selectN(18).invert(true);
+
+  hstx.bit(1).selectP(9).selectN(8);
+  hstx.bit(0).selectP(9).selectN(8).invert(true);
+
+  SIO sio;
+
+  u32 i = 0;
   while (true) {
-    hstx.bit(7).clock(true);
-    sio.gpioOut().bit(kPicoLED, 1);
-
-    hstx.bit(5).selectP(29).selectN(28);
-    hstx.bit(3).selectP(19).selectN(18);
-    hstx.bit(1).selectP(9).selectN(8);
-
-    hstx.bit(6).clock(true).invert(true);
-    hstx.bit(4).selectP(29).selectN(28).invert(true);
-    hstx.bit(2).selectP(19).selectN(18).invert(true);
-    hstx.bit(0).selectP(9).selectN(8).invert(true);
-
-    if (!hstx.fifoStatus.full()) { hstx.fifo.set(0x55555555); }
+    auto full = hstx.fifoStatus.full();
+    sio.gpioOut().bit(kPicoLED, full);
+    if (!full) { hstx.fifo.set(0x55555555); }
     _BUSY_LOOP();
   }
 }

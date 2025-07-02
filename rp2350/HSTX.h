@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rp2350/Common.h"
+#include "rp2350/Resets.h"
 
 /*
 Section 12.11. HSTX
@@ -119,4 +120,6 @@ struct HSTX {
 
   FIFOStatus fifoStatus {kHSTXFIFOBase + 0x00};
   Reg32      fifo {kHSTXFIFOBase + 0x04};
+
+  void reset() { Resets {}.cycleHSTX(); }
 };
